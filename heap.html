@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzatore Heap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0f172a;
+            --canvas-bg: #0f172a;
+            --bg-panel: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --accent: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+            --node-bg: rgba(30, 41, 59, 0.9);
+            --node-border: #3b82f6;
+        }
+
+        /* Theme Ocean */
+        [data-theme="ocean"] {
+            --bg-dark: #0a1628;
+            --primary: #0ea5e9;
+            --accent: #06b6d4;
+            --success: #14b8a6;
+            --node-bg: rgba(8, 24, 43, 0.95);
+            --node-border: #0ea5e9;
+        }
+
+        /* Theme Sunset */
+        [data-theme="sunset"] {
+            --bg-dark: #1a0f1e;
+            --primary: #f97316;
+            --accent: #ec4899;
+            --success: #a855f7;
+            --node-bg: rgba(33, 18, 36, 0.95);
+            --node-border: #f97316;
+        }
+
+        /* Theme Forest */
+        [data-theme="forest"] {
+            --bg-dark: #0f1a14;
+            --primary: #22c55e;
+            --accent: #84cc16;
+            --success: #10b981;
+            --node-bg: rgba(16, 29, 22, 0.95);
+            --node-border: #22c55e;
+        }
+
+        /* Theme Cyber */
+        [data-theme="cyber"] {
+            --bg-dark: #0d0d1a;
+            --primary: #a855f7;
+            --accent: #ec4899;
+            --success: #06b6d4;
+            --node-bg: rgba(14, 14, 28, 0.95);
+            --node-border: #a855f7;
+        }
+
+        /* Theme Amber */
+        [data-theme="amber"] {
+            --bg-dark: #1a1410;
+            --primary: #f59e0b;
+            --accent: #eab308;
+            --success: #84cc16;
+            --node-bg: rgba(29, 21, 16, 0.95);
+            --node-border: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 340px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .theme-btn {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Inputs & Buttons */
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn-danger {
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-full {
+            grid-column: 1 / -1;
+        }
+
+        .tab-group {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--bg-panel);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Stats */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: auto;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+        }
+
+        /* Terminal */
+        .terminal-panel {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            max-height: 160px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
+
+        .terminal-line {
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .terminal-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .terminal-line.success {
+            color: var(--success);
+        }
+
+        .terminal-line.error {
+            color: var(--danger);
+        }
+
+        .terminal-line.warn {
+            color: var(--warning);
+        }
+
+        /* Main Area */
+        main {
+            flex: 1;
+            position: relative;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        main:active {
+            cursor: grabbing;
+        }
+
+        #heapCanvas {
+            display: block;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 12px 20px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .array-display {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            word-break: break-all;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside>
+            <a href="treelizer.html" class="back-link">← Torna ai BST</a>
+            <h1>🌳 Heap</h1>
+            <p class="subtitle">Min/Max Heap Interattivo</p>
+
+            <div class="control-group">
+                <div class="group-title">Tema</div>
+                <div class="theme-selector">
+                    <button class="theme-btn active" data-theme="default">Blu</button>
+                    <button class="theme-btn" data-theme="ocean">Oceano</button>
+                    <button class="theme-btn" data-theme="sunset">Tramonto</button>
+                    <button class="theme-btn" data-theme="forest">Foresta</button>
+                    <button class="theme-btn" data-theme="cyber">Cyber</button>
+                    <button class="theme-btn" data-theme="amber">Ambra</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Tipo Heap</div>
+                <div class="tab-group">
+                    <div class="tab active" data-type="max">Min Heap</div>
+                    <div class="tab" data-type="min">Max Heap</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Operazioni</div>
+                <input type="number" id="nodeVal" placeholder="Valore nodo">
+                <div class="btn-grid">
+                    <button class="btn-primary" id="insertBtn">Insert</button>
+                    <button class="btn-danger" id="deleteBtn">Estrai Top</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Inserimento Multiplo</div>
+                <input type="text" id="bulkVal" placeholder="10, 5, 15, 3, 7...">
+                <button class="btn-full btn-primary" id="bulkBtn">Genera Heap</button>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Velocità Animazione</div>
+                <div class="slider-wrapper">
+                    <span>Lenta</span>
+                    <input type="range" id="speedSlider" min="10" max="100" value="50">
+                    <span>Veloce</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Operazioni</div>
+                <button class="btn-full btn-danger" id="resetBtn">Reset Heap</button>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Terminal</div>
+                <div class="terminal-panel" id="terminalLog">
+                    <div class="terminal-line">Pronto.</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <div class="group-title">Array Sottostante</div>
+                <div class="array-display" id="arrayDisplay">[ ]</div>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <span class="stat-label">Elementi</span>
+                    <span class="stat-value" id="countDisplay">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Altezza</span>
+                    <span class="stat-value" id="heightDisplay">0</span>
+                </div>
+                <div class="stat-item" style="grid-column: 1 / -1;">
+                    <span class="stat-label">Top Element</span>
+                    <span class="stat-value" id="topDisplay">—</span>
+                </div>
+            </div>
+        </aside>
+
+        <main id="canvasContainer">
+            <canvas id="heapCanvas"></canvas>
+            <div class="toast" id="toast">Pronto.</div>
+        </main>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('heapCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvasContainer');
+        const toast = document.getElementById('toast');
+        const terminalLog = document.getElementById('terminalLog');
+
+        const config = {
+            nodeRadius: 22,
+            lineWidth: 2,
+            vSpacing: 80,
+            minHSpacing: 25,
+            animSpeed: 500,
+        };
+
+        let state = {
+            heap: [],
+            type: 'min',
+            offsetX: 0,
+            offsetY: 0,
+            zoom: 1,
+            isDragging: false,
+            lastX: 0,
+            lastY: 0,
+            highlightNode: null,
+            nodePositions: {},
+        };
+
+        function showToast(msg, type = 'info') {
+            toast.textContent = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function clearTerminal() {
+            if (!terminalLog) return;
+            terminalLog.innerHTML = '';
+        }
+
+        function logTerminal(msg, type = 'info') {
+            if (!terminalLog) return;
+            const line = document.createElement('div');
+            line.className = `terminal-line ${type}`.trim();
+            line.textContent = msg;
+            terminalLog.appendChild(line);
+            terminalLog.scrollTop = terminalLog.scrollHeight;
+        }
+
+        function startOperation(title) {
+            clearTerminal();
+            logTerminal(title, 'info');
+        }
+
+        function wait() {
+            return new Promise(resolve => setTimeout(resolve, config.animSpeed));
+        }
+
+        async function highlight(index) {
+            state.highlightNode = index;
+            calculatePositions();
+            draw();
+            await wait();
+        }
+
+        function getParentIndex(i) {
+            return Math.floor((i - 1) / 2);
+        }
+
+        function getLeftChildIndex(i) {
+            return 2 * i + 1;
+        }
+
+        function getRightChildIndex(i) {
+            return 2 * i + 2;
+        }
+
+        function compare(a, b) {
+            if (state.type === 'min') return a > b;
+            else return a < b;
+        }
+
+        function swap(i, j) {
+            [state.heap[i], state.heap[j]] = [state.heap[j], state.heap[i]];
+        }
+
+        async function bubbleUp(index) {
+            while (index > 0) {
+                const parentIndex = getParentIndex(index);
+                await highlight(index);
+                logTerminal(`Confronto ${state.heap[index]} con ${state.heap[parentIndex]}`, 'info');
+
+                if (compare(state.heap[index], state.heap[parentIndex])) {
+                    await highlight(parentIndex);
+                    logTerminal(`Scambio ${state.heap[index]} con ${state.heap[parentIndex]}`, 'warn');
+                    swap(index, parentIndex);
+                    calculatePositions();
+                    draw();
+                    await wait();
+                    index = parentIndex;
+                } else {
+                    logTerminal('Ordine heap corretto, stop', 'success');
+                    break;
+                }
+            }
+        }
+
+        async function bubbleDown(index) {
+            while (true) {
+                let smallest = index;
+                const left = getLeftChildIndex(index);
+                const right = getRightChildIndex(index);
+
+                await highlight(index);
+
+                if (left < state.heap.length && compare(state.heap[smallest], state.heap[left])) {
+                    logTerminal(`Confronto ${state.heap[smallest]} con ${state.heap[left]} → seleziona sinistra`, 'info');
+                    smallest = left;
+                }
+                if (right < state.heap.length && compare(state.heap[smallest], state.heap[right])) {
+                    logTerminal(`Confronto ${state.heap[smallest]} con ${state.heap[right]} → seleziona destra`, 'info');
+                    smallest = right;
+                }
+
+                if (smallest !== index) {
+                    await highlight(smallest);
+                    logTerminal(`Scambio ${state.heap[index]} con ${state.heap[smallest]}`, 'warn');
+                    swap(index, smallest);
+                    calculatePositions();
+                    draw();
+                    await wait();
+                    index = smallest;
+                } else {
+                    logTerminal('Heap ripristinato', 'success');
+                    break;
+                }
+            }
+        }
+
+        async function insert(val, skipStart = false) {
+            const title = `Inserimento ${val} (${state.type === 'min' ? 'Min' : 'Max'} Heap)`;
+            if (skipStart) logTerminal(title, 'info');
+            else startOperation(title);
+            state.heap.push(val);
+            logTerminal(`Aggiunto in coda: ${val}`, 'info');
+            await bubbleUp(state.heap.length - 1);
+        }
+
+        async function extractTop() {
+            if (state.heap.length === 0) {
+                startOperation('Estrazione top');
+                logTerminal('Heap vuoto', 'error');
+                showToast('Heap vuoto', 'error');
+                return null;
+            }
+
+            const top = state.heap[0];
+            startOperation(`Estrazione top (${top})`);
+            await highlight(0);
+            
+            const last = state.heap.pop();
+            logTerminal(`Rimuovo ultimo: ${last}`, 'info');
+
+            if (state.heap.length > 0) {
+                state.heap[0] = last;
+                logTerminal(`Porto ${last} in cima`, 'info');
+                calculatePositions();
+                draw();
+                await bubbleDown(0);
+            }
+
+            state.highlightNode = null;
+            calculatePositions();
+            draw();
+            return top;
+        }
+
+        function updateStats() {
+            document.getElementById('countDisplay').textContent = state.heap.length;
+            document.getElementById('heightDisplay').textContent = state.heap.length > 0 ? Math.floor(Math.log2(state.heap.length)) + 1 : 0;
+            document.getElementById('topDisplay').textContent = state.heap.length > 0 ? state.heap[0] : '—';
+            document.getElementById('arrayDisplay').textContent = state.heap.length > 0 ? '[ ' + state.heap.join(', ') + ' ]' : '[ ]';
+        }
+
+        function calculatePositions() {
+            if (state.heap.length === 0) {
+                state.nodePositions = {};
+                return;
+            }
+
+            // Calcola l'altezza di un sottoalbero basato su indice
+            function getSubtreeHeight(index) {
+                if (index >= state.heap.length) return 0;
+                const leftChild = getLeftChildIndex(index);
+                const rightChild = getRightChildIndex(index);
+                if (leftChild >= state.heap.length && rightChild >= state.heap.length) return 1;
+                return 1 + Math.max(getSubtreeHeight(leftChild), getSubtreeHeight(rightChild));
+            }
+
+            // Assegna posizioni con spaziatura uniforme
+            function assignPositions(index, x, y) {
+                if (index >= state.heap.length) return;
+
+                state.nodePositions[index] = { x: x, y: y };
+
+                const height = getSubtreeHeight(index);
+                const offset = config.minHSpacing * Math.pow(2, height - 2);
+
+                const leftChild = getLeftChildIndex(index);
+                const rightChild = getRightChildIndex(index);
+
+                if (leftChild < state.heap.length) {
+                    assignPositions(leftChild, x - offset, y + config.vSpacing);
+                }
+
+                if (rightChild < state.heap.length) {
+                    assignPositions(rightChild, x + offset, y + config.vSpacing);
+                }
+            }
+
+            assignPositions(0, 0, 50);
+        }
+
+        function draw() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--canvas-bg');
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (state.heap.length === 0) return;
+
+            ctx.save();
+            ctx.translate(canvas.width / 2 + state.offsetX, state.offsetY + 20);
+            ctx.scale(state.zoom, state.zoom);
+
+            drawEdges();
+            drawNodes();
+
+            ctx.restore();
+        }
+
+        function drawEdges() {
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+            ctx.lineWidth = config.lineWidth;
+
+            for (let i = 0; i < state.heap.length; i++) {
+                const pos = state.nodePositions[i];
+                if (!pos) continue;
+
+                const leftChild = getLeftChildIndex(i);
+                const rightChild = getRightChildIndex(i);
+
+                if (leftChild < state.heap.length) {
+                    const childPos = state.nodePositions[leftChild];
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x, pos.y);
+                    ctx.lineTo(childPos.x, childPos.y);
+                    ctx.stroke();
+                }
+
+                if (rightChild < state.heap.length) {
+                    const childPos = state.nodePositions[rightChild];
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x, pos.y);
+                    ctx.lineTo(childPos.x, childPos.y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function drawNodes() {
+            for (let i = 0; i < state.heap.length; i++) {
+                const pos = state.nodePositions[i];
+                if (!pos) continue;
+
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, config.nodeRadius, 0, Math.PI * 2);
+
+                const styles = getComputedStyle(document.documentElement);
+                let fill = styles.getPropertyValue('--node-bg').trim() || 'rgba(30, 41, 59, 0.9)';
+                let border = styles.getPropertyValue('--node-border').trim();
+                let text = '#f1f5f9';
+
+                // Evidenzia il nodo in animazione
+                if (state.highlightNode === i) {
+                    fill = 'rgba(251, 191, 36, 0.4)';
+                    border = '#fbbf24';
+                } 
+                // Evidenzia il top element
+                else if (i === 0) {
+                    fill = 'rgba(16, 185, 129, 0.3)';
+                    border = styles.getPropertyValue('--success').trim();
+                }
+
+                ctx.fillStyle = fill;
+                ctx.fill();
+                ctx.strokeStyle = border;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.fillStyle = text;
+                ctx.font = 'bold 16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(state.heap[i], pos.x, pos.y);
+            }
+        }
+
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const theme = btn.dataset.theme;
+                if (theme === 'default') {
+                    document.documentElement.removeAttribute('data-theme');
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                draw();
+            });
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                state.type = tab.dataset.type;
+                draw();
+            });
+        });
+
+        document.getElementById('insertBtn').addEventListener('click', async () => {
+            const val = parseInt(document.getElementById('nodeVal').value);
+            if (isNaN(val)) {
+                startOperation('Inserimento');
+                logTerminal('Valore non valido', 'error');
+                showToast('Inserisci un valore valido', 'error');
+                return;
+            }
+
+            await insert(val);
+            state.highlightNode = null;
+            calculatePositions();
+            updateStats();
+            draw();
+            showToast(`Valore ${val} inserito`, 'success');
+            document.getElementById('nodeVal').value = '';
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', async () => {
+            const top = await extractTop();
+            if (top !== null) {
+                calculatePositions();
+                updateStats();
+                draw();
+                showToast(`Elemento ${top} estratto`, 'success');
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            startOperation('Reset heap');
+            state.heap = [];
+            state.nodePositions = {};
+            state.highlightNode = null;
+            updateStats();
+            draw();
+            logTerminal('Struttura svuotata', 'success');
+            showToast('Heap resettato', 'info');
+        });
+
+        document.getElementById('bulkBtn').addEventListener('click', async () => {
+            const input = document.getElementById('bulkVal').value;
+            const arr = input.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+
+            if (arr.length === 0) {
+                startOperation('Inserimento multiplo');
+                logTerminal('Nessun valore valido', 'error');
+                showToast('Inserisci valori separati da virgola', 'error');
+                return;
+            }
+
+            startOperation(`Inserimento multiplo (${arr.length} valori)`);
+            state.heap = [];
+            const oldSpeed = config.animSpeed;
+            config.animSpeed = 50;
+
+            for (let v of arr) {
+                logTerminal(`Inserisco ${v}`, 'info');
+                await insert(v, true);
+            }
+
+            config.animSpeed = oldSpeed;
+            state.highlightNode = null;
+            calculatePositions();
+            updateStats();
+            draw();
+            showToast(`${arr.length} elementi inseriti`, 'success');
+            document.getElementById('bulkVal').value = '';
+        });
+
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            const speed = parseInt(e.target.value);
+            config.animSpeed = 1000 - (speed * 9);
+        });
+
+        // Pan/Drag
+        container.addEventListener('mousedown', (e) => {
+            state.isDragging = true;
+            state.lastX = e.clientX;
+            state.lastY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.isDragging = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!state.isDragging) return;
+            state.offsetX += e.clientX - state.lastX;
+            state.offsetY += e.clientY - state.lastY;
+            state.lastX = e.clientX;
+            state.lastY = e.clientY;
+            draw();
+        });
+
+        // Zoom with mouse wheel
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const direction = e.deltaY > 0 ? -1 : 1;
+            const newZoom = state.zoom + (direction * zoomSpeed);
+            
+            if (newZoom >= 0.2 && newZoom <= 3) {
+                state.zoom = newZoom;
+                draw();
+            }
+        }, { passive: false });
+
+        window.addEventListener('resize', draw);
+
+        startOperation('Pronto');
+        draw();
+        updateStats();
+    </script>
+</body>
+</html>
