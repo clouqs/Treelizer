@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzatore Alberi Binari</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --accent: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+            --node-bg: rgba(30, 41, 59, 0.9);
+            --node-border: #3b82f6;
+            --red-node: #ef4444;
+            --black-node: #1e293b;
+        }
+
+        /* Theme Ocean */
+        [data-theme="ocean"] {
+            --bg-dark: #0a1628;
+            --primary: #0ea5e9;
+            --accent: #06b6d4;
+            --success: #14b8a6;
+            --node-border: #0ea5e9;
+        }
+
+        /* Theme Sunset */
+        [data-theme="sunset"] {
+            --bg-dark: #1a0f1e;
+            --primary: #f97316;
+            --accent: #ec4899;
+            --success: #a855f7;
+            --node-border: #f97316;
+        }
+
+        /* Theme Forest */
+        [data-theme="forest"] {
+            --bg-dark: #0f1a14;
+            --primary: #22c55e;
+            --accent: #84cc16;
+            --success: #10b981;
+            --node-border: #22c55e;
+        }
+
+        /* Theme Cyber */
+        [data-theme="cyber"] {
+            --bg-dark: #0d0d1a;
+            --primary: #a855f7;
+            --accent: #ec4899;
+            --success: #06b6d4;
+            --node-border: #a855f7;
+        }
+
+        /* Theme Amber */
+        [data-theme="amber"] {
+            --bg-dark: #1a1410;
+            --primary: #f59e0b;
+            --accent: #eab308;
+            --success: #84cc16;
+            --node-border: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 340px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .theme-btn {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Inputs & Buttons */
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn-danger {
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-full {
+            grid-column: 1 / -1;
+        }
+
+        .tab-group {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--bg-panel);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+        }
+
+        /* Sliders */
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Stats */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: auto;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+        }
+
+        /* Main Area */
+        main {
+            flex: 1;
+            position: relative;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        main:active {
+            cursor: grabbing;
+        }
+
+        #treeCanvas {
+            display: block;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 12px 20px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        /* Legend overlay */
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-panel);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.75rem;
+            display: flex;
+            gap: 15px;
+            pointer-events: none;
+            backdrop-filter: blur(12px);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .color-picker-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .color-picker-row label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 35px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside>
+            <h1>🌳 Tree Visualizer</h1>
+            <p class="subtitle">Alberi Binari Interattivi</p>
+
+            <div class="control-group">
+                <div class="group-title">Tema</div>
+                <div class="theme-selector">
+                    <button class="theme-btn active" data-theme="default">Blu</button>
+                    <button class="theme-btn" data-theme="ocean">Oceano</button>
+                    <button class="theme-btn" data-theme="sunset">Tramonto</button>
+                    <button class="theme-btn" data-theme="forest">Foresta</button>
+                    <button class="theme-btn" data-theme="cyber">Cyber</button>
+                    <button class="theme-btn" data-theme="amber">Ambra</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Tipo Albero</div>
+                <div class="tab-group">
+                    <div class="tab active" data-type="binary">Binario</div>
+                    <div class="tab" data-type="bst">BST</div>
+                    <div class="tab" data-type="rbt">RBT</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Operazioni</div>
+                <input type="number" id="nodeVal" placeholder="Valore nodo">
+                <div class="btn-grid">
+                    <button class="btn-primary" id="insertBtn">Inserisci</button>
+                    <button id="searchBtn">Cerca</button>
+                    <button id="deleteBtn">Elimina</button>
+                    <button class="btn-danger" id="resetBtn">Reset</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Inserimento Multiplo</div>
+                <input type="text" id="bulkVal" placeholder="10, 5, 15, 3, 7...">
+                <button class="btn-full btn-primary" id="bulkBtn">Genera Albero</button>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Attraversamenti</div>
+                <div class="btn-grid-3">
+                    <button id="preBtn">Pre-Order</button>
+                    <button id="inBtn">In-Order</button>
+                    <button id="postBtn">Post-Order</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Ricerca Speciale</div>
+                <div class="btn-grid">
+                    <button id="minBtn">Minimo</button>
+                    <button id="maxBtn">Massimo</button>
+                    <button id="succBtn">Successore</button>
+                    <button id="predBtn">Predecessore</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Rotazioni</div>
+                <div class="btn-grid">
+                    <button id="rotLeftBtn">Ruota ←</button>
+                    <button id="rotRightBtn">Ruota →</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Velocità Animazione</div>
+                <div class="slider-wrapper">
+                    <span>Lenta</span>
+                    <input type="range" id="speedSlider" min="10" max="100" value="50">
+                    <span>Veloce</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="group-title">Personalizza Colori</div>
+                <div class="color-picker-row">
+                    <label>Bordo Nodo</label>
+                    <input type="color" id="colorBorder" value="#3b82f6">
+                </div>
+                <div class="color-picker-row">
+                    <label>Nodo Rosso (RBT)</label>
+                    <input type="color" id="colorRed" value="#ef4444">
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <span class="stat-label">Nodi</span>
+                    <span class="stat-value" id="countDisplay">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Altezza</span>
+                    <span class="stat-value" id="heightDisplay">0</span>
+                </div>
+                <div class="stat-item" style="grid-column: 1 / -1;">
+                    <span class="stat-label">Ultimo Attraversamento</span>
+                    <span class="stat-value" id="traversalDisplay" style="font-size: 0.9rem;">—</span>
+                </div>
+            </div>
+        </aside>
+
+        <main id="canvasContainer">
+            <canvas id="treeCanvas"></canvas>
+            <div class="toast" id="toast">Pronto.</div>
+            <div class="legend">
+                <div><span class="legend-dot" style="background: rgba(30, 41, 59, 0.9); border: 2px solid var(--primary);"></span>Normale</div>
+                <div><span class="legend-dot" style="background: var(--success); opacity: 0.3; border: 2px solid var(--success);"></span>Visitato</div>
+                <div><span class="legend-dot" style="background: var(--warning); opacity: 0.3; border: 2px solid var(--warning);"></span>Corrente</div>
+                <div><span class="legend-dot" style="background: var(--danger);"></span>Rosso (RBT)</div>
+                <div><span class="legend-dot" style="background: #1e293b; border: 2px solid #fff;"></span>Nero (RBT)</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('treeCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvasContainer');
+        const toast = document.getElementById('toast');
+
+        // Configurazione migliorata per spaziatura simmetrica
+        const config = {
+            nodeRadius: 22,
+            lineWidth: 2,
+            vSpacing: 80,  // Spaziatura verticale fissa
+            minHSpacing: 60,  // Spaziatura orizzontale minima
+            animSpeed: 500,
+        };
+
+        let state = {
+            root: null,
+            type: 'binary',
+            theme: 'default',
+            offsetX: 0,
+            offsetY: 0,
+            isDragging: false,
+            lastX: 0,
+            lastY: 0,
+            highlightNode: null,
+            visitedNodes: new Set(),
+            selectedNode: null,
+            customColors: {
+                border: '#3b82f6',
+                red: '#ef4444'
+            }
+        };
+
+        // === CLASSI NODO ===
+        class Node {
+            constructor(val) {
+                this.val = val;
+                this.left = null;
+                this.right = null;
+                this.x = 0;
+                this.y = 0;
+            }
+        }
+
+        class RBTNode extends Node {
+            constructor(val, color = 'red') {
+                super(val);
+                this.color = color;
+                this.parent = null;
+            }
+        }
+
+        // === UTILITY ===
+        function showToast(msg, type = 'info') {
+            toast.textContent = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function wait() {
+            return new Promise(resolve => setTimeout(resolve, config.animSpeed));
+        }
+
+        async function highlight(node) {
+            state.highlightNode = node;
+            state.visitedNodes.add(node);
+            draw();
+            await wait();
+        }
+
+        function countNodes(node) {
+            if (!node) return 0;
+            return 1 + countNodes(node.left) + countNodes(node.right);
+        }
+
+        function getHeight(node) {
+            if (!node) return 0;
+            return 1 + Math.max(getHeight(node.left), getHeight(node.right));
+        }
+
+        function updateStats() {
+            document.getElementById('countDisplay').textContent = countNodes(state.root);
+            document.getElementById('heightDisplay').textContent = getHeight(state.root);
+        }
+
+        // === LAYOUT MIGLIORATO PER SIMMETRIA ===
+        function calculatePositions() {
+            if (!state.root) return;
+
+            // Calcola la larghezza necessaria per ogni sottoalbero
+            function getTreeWidth(node) {
+                if (!node) return 0;
+                if (!node.left && !node.right) return 1;
+                return getTreeWidth(node.left) + getTreeWidth(node.right);
+            }
+
+            // Assegna posizioni in modo simmetrico
+            function assignPositions(node, left, right, y) {
+                if (!node) return;
+
+                const mid = (left + right) / 2;
+                node.x = mid * config.minHSpacing;
+                node.y = y;
+
+                if (node.left || node.right) {
+                    const leftWidth = getTreeWidth(node.left);
+                    const rightWidth = getTreeWidth(node.right);
+                    const totalWidth = leftWidth + rightWidth;
+
+                    if (totalWidth > 0) {
+                        const leftEnd = left + leftWidth;
+                        
+                        assignPositions(node.left, left, leftEnd, y + config.vSpacing);
+                        assignPositions(node.right, leftEnd, right, y + config.vSpacing);
+                    }
+                }
+            }
+
+            const width = getTreeWidth(state.root);
+            assignPositions(state.root, 0, width, 50);
+        }
+
+        // === RENDERING ===
+        function draw() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark');
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!state.root) return;
+
+            ctx.save();
+            ctx.translate(canvas.width / 2 + state.offsetX, state.offsetY + 20);
+
+            drawEdges(state.root);
+            drawNodes(state.root);
+
+            ctx.restore();
+        }
+
+        function drawEdges(node) {
+            if (!node) return;
+
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+            ctx.lineWidth = config.lineWidth;
+
+            if (node.left) {
+                ctx.beginPath();
+                ctx.moveTo(node.x, node.y);
+                ctx.lineTo(node.left.x, node.left.y);
+                ctx.stroke();
+                drawEdges(node.left);
+            }
+
+            if (node.right) {
+                ctx.beginPath();
+                ctx.moveTo(node.x, node.y);
+                ctx.lineTo(node.right.x, node.right.y);
+                ctx.stroke();
+                drawEdges(node.right);
+            }
+        }
+
+        function drawNodes(node) {
+            if (!node) return;
+
+            if (node.left) drawNodes(node.left);
+            if (node.right) drawNodes(node.right);
+
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, config.nodeRadius, 0, Math.PI * 2);
+
+            let fill = 'rgba(30, 41, 59, 0.9)';
+            let text = '#f1f5f9';
+            let border = state.customColors.border;
+
+            // RBT coloring
+            if (state.type === 'rbt') {
+                if (node.color === 'red') {
+                    fill = state.customColors.red;
+                    text = '#ffffff';
+                    border = state.customColors.red;
+                } else {
+                    fill = '#1e293b';
+                    text = '#ffffff';
+                    border = '#f1f5f9';
+                }
+            }
+
+            // Stati
+            if (state.highlightNode === node) {
+                fill = 'rgba(251, 191, 36, 0.4)';
+                border = '#fbbf24';
+            } else if (state.visitedNodes.has(node)) {
+                fill = 'rgba(16, 185, 129, 0.4)';
+            }
+
+            if (state.selectedNode === node) {
+                ctx.lineWidth = 4;
+            } else {
+                ctx.lineWidth = 3;
+            }
+
+            ctx.fillStyle = fill;
+            ctx.fill();
+            ctx.strokeStyle = border;
+            ctx.stroke();
+
+            // Testo
+            ctx.fillStyle = text;
+            ctx.font = 'bold 16px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.val, node.x, node.y);
+        }
+
+        // === BST INSERT ===
+        async function insertBST(val) {
+            state.visitedNodes.clear();
+            state.highlightNode = null;
+
+            if (!state.root) {
+                state.root = new Node(val);
+                calculatePositions();
+                draw();
+                showToast(`Nodo ${val} inserito come radice`, 'success');
+                return;
+            }
+
+            let curr = state.root;
+            while (true) {
+                await highlight(curr);
+
+                if (val < curr.val) {
+                    if (!curr.left) {
+                        curr.left = new Node(val);
+                        showToast(`Nodo ${val} inserito`, 'success');
+                        break;
+                    }
+                    curr = curr.left;
+                } else if (val > curr.val) {
+                    if (!curr.right) {
+                        curr.right = new Node(val);
+                        showToast(`Nodo ${val} inserito`, 'success');
+                        break;
+                    }
+                    curr = curr.right;
+                } else {
+                    showToast(`Valore ${val} già presente`, 'error');
+                    state.highlightNode = null;
+                    draw();
+                    return;
+                }
+            }
+
+            state.highlightNode = null;
+            calculatePositions();
+            draw();
+        }
+
+        // === BST DELETE (CORRETTO) ===
+        async function deleteBST(val) {
+            state.visitedNodes.clear();
+            state.root = await deleteBSTNode(state.root, val);
+            state.highlightNode = null;
+            calculatePositions();
+            draw();
+            updateStats();
+        }
+
+        async function deleteBSTNode(node, val) {
+            if (!node) {
+                showToast(`Valore ${val} non trovato`, 'error');
+                return null;
+            }
+
+            await highlight(node);
+
+            if (val < node.val) {
+                node.left = await deleteBSTNode(node.left, val);
+            } else if (val > node.val) {
+                node.right = await deleteBSTNode(node.right, val);
+            } else {
+                // Nodo trovato
+                if (!node.left && !node.right) {
+                    showToast(`Nodo ${val} eliminato (foglia)`, 'success');
+                    return null;
+                } else if (!node.left) {
+                    showToast(`Nodo ${val} eliminato (1 figlio dx)`, 'success');
+                    return node.right;
+                } else if (!node.right) {
+                    showToast(`Nodo ${val} eliminato (1 figlio sx)`, 'success');
+                    return node.left;
+                } else {
+                    // Due figli: trova successore
+                    let successor = findMin(node.right);
+                    await highlight(successor);
+                    node.val = successor.value;
+                    node.right = await deleteBSTNode(node.right, successor.val);
+                    showToast(`Nodo ${val} sostituito con ${successor.val}`, 'success');
+                }
+            }
+
+            return node;
+        }
+
+        // === SEARCH ===
+        async function searchBST(val) {
+            state.visitedNodes.clear();
+            state.highlightNode = null;
+
+            let curr = state.root;
+            let found = false;
+
+            while (curr) {
+                await highlight(curr);
+
+                if (curr.val === val) {
+                    found = true;
+                    state.selectedNode = curr;
+                    showToast(`Valore ${val} trovato!`, 'success');
+                    break;
+                }
+                curr = val < curr.val ? curr.left : curr.right;
+            }
+
+            if (!found) {
+                showToast(`Valore ${val} non trovato`, 'error');
+            }
+
+            state.highlightNode = null;
+            draw();
+        }
+
+        // === TRAVERSALS (CORRETTI) ===
+        async function inOrderTraversal(node, result = []) {
+            if (!node) return result;
+
+            await inOrderTraversal(node.left, result);
+            
+            await highlight(node);
+            result.push(node.val);
+            
+            await inOrderTraversal(node.right, result);
+
+            return result;
+        }
+
+        async function preOrderTraversal(node, result = []) {
+            if (!node) return result;
+
+            await highlight(node);
+            result.push(node.val);
+
+            await preOrderTraversal(node.left, result);
+            await preOrderTraversal(node.right, result);
+
+            return result;
+        }
+
+        async function postOrderTraversal(node, result = []) {
+            if (!node) return result;
+
+            await postOrderTraversal(node.left, result);
+            await postOrderTraversal(node.right, result);
+
+            await highlight(node);
+            result.push(node.val);
+
+            return result;
+        }
+
+        // === MIN/MAX ===
+        function findMin(node) {
+            while (node && node.left) {
+                node = node.left;
+            }
+            return node;
+        }
+
+        function findMax(node) {
+            while (node && node.right) {
+                node = node.right;
+            }
+            return node;
+        }
+
+        async function animateFindMin() {
+            if (!state.root) {
+                showToast('Albero vuoto', 'error');
+                return;
+            }
+
+            state.visitedNodes.clear();
+            let node = state.root;
+
+            while (node) {
+                await highlight(node);
+                if (!node.left) {
+                    state.selectedNode = node;
+                    showToast(`Minimo: ${node.val}`, 'success');
+                    state.highlightNode = null;
+                    draw();
+                    return;
+                }
+                node = node.left;
+            }
+        }
+
+        async function animateFindMax() {
+            if (!state.root) {
+                showToast('Albero vuoto', 'error');
+                return;
+            }
+
+            state.visitedNodes.clear();
+            let node = state.root;
+
+            while (node) {
+                await highlight(node);
+                if (!node.right) {
+                    state.selectedNode = node;
+                    showToast(`Massimo: ${node.val}`, 'success');
+                    state.highlightNode = null;
+                    draw();
+                    return;
+                }
+                node = node.right;
+            }
+        }
+
+        // === SUCCESSOR/PREDECESSOR ===
+        function getSuccessor(root, node) {
+            if (node.right) return findMin(node.right);
+
+            let successor = null;
+            let current = root;
+
+            while (current) {
+                if (node.val < current.val) {
+                    successor = current;
+                    current = current.left;
+                } else if (node.val > current.val) {
+                    current = current.right;
+                } else {
+                    break;
+                }
+            }
+
+            return successor;
+        }
+
+        function getPredecessor(root, node) {
+            if (node.left) return findMax(node.left);
+
+            let predecessor = null;
+            let current = root;
+
+            while (current) {
+                if (node.val > current.val) {
+                    predecessor = current;
+                    current = current.right;
+                } else if (node.val < current.val) {
+                    current = current.left;
+                } else {
+                    break;
+                }
+            }
+
+            return predecessor;
+        }
+
+        // === RBT INSERT ===
+        function insertRBT(val) {
+            let newNode = new RBTNode(val);
+
+            if (!state.root) {
+                newNode.color = 'black';
+                state.root = newNode;
+                calculatePositions();
+                draw();
+                showToast(`Nodo ${val} inserito come radice nera`, 'success');
+                return;
+            }
+
+            let curr = state.root;
+            let parent = null;
+
+            while (curr) {
+                parent = curr;
+                if (val < curr.val) curr = curr.left;
+                else if (val > curr.val) curr = curr.right;
+                else {
+                    showToast(`Valore ${val} già presente`, 'error');
+                    return;
+                }
+            }
+
+            newNode.parent = parent;
+            if (val < parent.val) parent.left = newNode;
+            else parent.right = newNode;
+
+            fixRBT(newNode);
+            calculatePositions();
+            draw();
+            showToast(`Nodo ${val} inserito in RBT`, 'success');
+        }
+
+        function fixRBT(node) {
+            while (node !== state.root && node.parent && node.parent.color === 'red') {
+                let parent = node.parent;
+                let grand = parent.parent;
+
+                if (!grand) break;
+
+                if (parent === grand.left) {
+                    let uncle = grand.right;
+
+                    if (uncle && uncle.color === 'red') {
+                        parent.color = 'black';
+                        uncle.color = 'black';
+                        grand.color = 'red';
+                        node = grand;
+                    } else {
+                        if (node === parent.right) {
+                            node = parent;
+                            rotateLeft(node);
+                            parent = node.parent;
+                        }
+                        if (parent) parent.color = 'black';
+                        if (grand) grand.color = 'red';
+                        rotateRight(grand);
+                    }
+                } else {
+                    let uncle = grand.left;
+
+                    if (uncle && uncle.color === 'red') {
+                        parent.color = 'black';
+                        uncle.color = 'black';
+                        grand.color = 'red';
+                        node = grand;
+                    } else {
+                        if (node === parent.left) {
+                            node = parent;
+                            rotateRight(node);
+                            parent = node.parent;
+                        }
+                        if (parent) parent.color = 'black';
+                        if (grand) grand.color = 'red';
+                        rotateLeft(grand);
+                    }
+                }
+            }
+
+            state.root.color = 'black';
+        }
+
+        function rotateLeft(node) {
+            let right = node.right;
+            node.right = right.left;
+
+            if (right.left) right.left.parent = node;
+            right.parent = node.parent;
+
+            if (!node.parent) state.root = right;
+            else if (node === node.parent.left) node.parent.left = right;
+            else node.parent.right = right;
+
+            right.left = node;
+            node.parent = right;
+        }
+
+        function rotateRight(node) {
+            let left = node.left;
+            node.left = left.right;
+
+            if (left.right) left.right.parent = node;
+            left.parent = node.parent;
+
+            if (!node.parent) state.root = left;
+            else if (node === node.parent.right) node.parent.right = left;
+            else node.parent.left = left;
+
+            left.right = node;
+            node.parent = left;
+        }
+
+        // === MANUAL ROTATIONS ===
+        function manualRotateLeft() {
+            if (!state.selectedNode || !state.selectedNode.right) {
+                showToast('Seleziona un nodo con figlio destro', 'error');
+                return;
+            }
+
+            if (state.type === 'rbt') {
+                rotateLeft(state.selectedNode);
+            } else {
+                // BST rotation
+                let parent = findParent(state.root, state.selectedNode);
+                let node = state.selectedNode;
+                let right = node.right;
+
+                node.right = right.left;
+                right.left = node;
+
+                if (!parent) state.root = right;
+                else if (parent.left === node) parent.left = right;
+                else parent.right = right;
+            }
+
+            calculatePositions();
+            draw();
+            showToast('Rotazione sinistra completata', 'success');
+        }
+
+        function manualRotateRight() {
+            if (!state.selectedNode || !state.selectedNode.left) {
+                showToast('Seleziona un nodo con figlio sinistro', 'error');
+                return;
+            }
+
+            if (state.type === 'rbt') {
+                rotateRight(state.selectedNode);
+            } else {
+                let parent = findParent(state.root, state.selectedNode);
+                let node = state.selectedNode;
+                let left = node.left;
+
+                node.left = left.right;
+                left.right = node;
+
+                if (!parent) state.root = left;
+                else if (parent.left === node) parent.left = left;
+                else parent.right = left;
+            }
+
+            calculatePositions();
+            draw();
+            showToast('Rotazione destra completata', 'success');
+        }
+
+        function findParent(root, node) {
+            if (!root || root === node) return null;
+            if (root.left === node || root.right === node) return root;
+
+            let leftResult = findParent(root.left, node);
+            if (leftResult) return leftResult;
+
+            return findParent(root.right, node);
+        }
+
+        // === EVENT LISTENERS ===
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const theme = btn.dataset.theme;
+                if (theme === 'default') {
+                    document.body.removeAttribute('data-theme');
+                } else {
+                    document.body.setAttribute('data-theme', theme);
+                }
+                draw();
+            });
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                state.type = tab.dataset.type;
+            });
+        });
+
+        document.getElementById('insertBtn').addEventListener('click', async () => {
+            const val = parseInt(document.getElementById('nodeVal').value);
+            if (isNaN(val)) {
+                showToast('Inserisci un valore valido', 'error');
+                return;
+            }
+
+            if (state.type === 'rbt') {
+                insertRBT(val);
+            } else {
+                await insertBST(val);
+            }
+
+            updateStats();
+            document.getElementById('nodeVal').value = '';
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', async () => {
+            const val = parseInt(document.getElementById('nodeVal').value);
+            if (isNaN(val)) {
+                showToast('Inserisci un valore valido', 'error');
+                return;
+            }
+
+            if (state.type === 'rbt') {
+                showToast('Cancellazione RBT non implementata', 'info');
+            } else {
+                await deleteBST(val);
+            }
+        });
+
+        document.getElementById('searchBtn').addEventListener('click', async () => {
+            const val = parseInt(document.getElementById('nodeVal').value);
+            if (isNaN(val)) {
+                showToast('Inserisci un valore valido', 'error');
+                return;
+            }
+
+            await searchBST(val);
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            state.root = null;
+            state.selectedNode = null;
+            state.visitedNodes.clear();
+            state.highlightNode = null;
+            updateStats();
+            draw();
+            document.getElementById('traversalDisplay').textContent = '—';
+            showToast('Albero resettato', 'info');
+        });
+
+        document.getElementById('bulkBtn').addEventListener('click', async () => {
+            const input = document.getElementById('bulkVal').value;
+            const arr = input.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+
+            if (arr.length === 0) {
+                showToast('Inserisci valori separati da virgola', 'error');
+                return;
+            }
+
+            const oldSpeed = config.animSpeed;
+            config.animSpeed = 50;
+
+            for (let v of arr) {
+                if (state.type === 'rbt') insertRBT(v);
+                else await insertBST(v);
+            }
+
+            config.animSpeed = oldSpeed;
+            updateStats();
+            document.getElementById('bulkVal').value = '';
+            showToast(`${arr.length} nodi inseriti`, 'success');
+        });
+
+        document.getElementById('inBtn').addEventListener('click', async () => {
+            if (!state.root) {
+                showToast('Albero vuoto', 'error');
+                return;
+            }
+            state.visitedNodes.clear();
+            const result = await inOrderTraversal(state.root);
+            document.getElementById('traversalDisplay').textContent = result.join(', ');
+            state.highlightNode = null;
+            draw();
+            showToast('In-Order completato', 'success');
+        });
+
+        document.getElementById('preBtn').addEventListener('click', async () => {
+            if (!state.root) {
+                showToast('Albero vuoto', 'error');
+                return;
+            }
+            state.visitedNodes.clear();
+            const result = await preOrderTraversal(state.root);
+            document.getElementById('traversalDisplay').textContent = result.join(', ');
+            state.highlightNode = null;
+            draw();
+            showToast('Pre-Order completato', 'success');
+        });
+
+        document.getElementById('postBtn').addEventListener('click', async () => {
+            if (!state.root) {
+                showToast('Albero vuoto', 'error');
+                return;
+            }
+            state.visitedNodes.clear();
+            const result = await postOrderTraversal(state.root);
+            document.getElementById('traversalDisplay').textContent = result.join(', ');
+            state.highlightNode = null;
+            draw();
+            showToast('Post-Order completato', 'success');
+        });
+
+        document.getElementById('minBtn').addEventListener('click', animateFindMin);
+        document.getElementById('maxBtn').addEventListener('click', animateFindMax);
+
+        document.getElementById('succBtn').addEventListener('click', () => {
+            if (!state.selectedNode) {
+                showToast('Seleziona prima un nodo', 'error');
+                return;
+            }
+
+            const succ = getSuccessor(state.root, state.selectedNode);
+            if (succ) {
+                state.visitedNodes.clear();
+                state.visitedNodes.add(succ);
+                state.selectedNode = succ;
+                draw();
+                showToast(`Successore: ${succ.val}`, 'success');
+            } else {
+                showToast('Nessun successore', 'info');
+            }
+        });
+
+        document.getElementById('predBtn').addEventListener('click', () => {
+            if (!state.selectedNode) {
+                showToast('Seleziona prima un nodo', 'error');
+                return;
+            }
+
+            const pred = getPredecessor(state.root, state.selectedNode);
+            if (pred) {
+                state.visitedNodes.clear();
+                state.visitedNodes.add(pred);
+                state.selectedNode = pred;
+                draw();
+                showToast(`Predecessore: ${pred.val}`, 'success');
+            } else {
+                showToast('Nessun predecessore', 'info');
+            }
+        });
+
+        document.getElementById('rotLeftBtn').addEventListener('click', manualRotateLeft);
+        document.getElementById('rotRightBtn').addEventListener('click', manualRotateRight);
+
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            const speed = parseInt(e.target.value);
+            config.animSpeed = 1000 - (speed * 9);
+        });
+
+        document.getElementById('colorBorder').addEventListener('change', (e) => {
+            state.customColors.border = e.target.value;
+            draw();
+        });
+
+        document.getElementById('colorRed').addEventListener('change', (e) => {
+            state.customColors.red = e.target.value;
+            draw();
+        });
+
+        // Click su canvas per selezionare nodo
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left - canvas.width / 2 - state.offsetX;
+            const y = e.clientY - rect.top - state.offsetY - 20;
+
+            state.selectedNode = findNodeAtPosition(state.root, x, y);
+            if (state.selectedNode) {
+                showToast(`Nodo ${state.selectedNode.val} selezionato`, 'info');
+            }
+            draw();
+        });
+
+        function findNodeAtPosition(node, x, y) {
+            if (!node) return null;
+
+            const dist = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
+            if (dist <= config.nodeRadius) return node;
+
+            const leftResult = findNodeAtPosition(node.left, x, y);
+            if (leftResult) return leftResult;
+
+            return findNodeAtPosition(node.right, x, y);
+        }
+
+        // Pan/Drag
+        container.addEventListener('mousedown', (e) => {
+            state.isDragging = true;
+            state.lastX = e.clientX;
+            state.lastY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.isDragging = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!state.isDragging) return;
+            state.offsetX += e.clientX - state.lastX;
+            state.offsetY += e.clientY - state.lastY;
+            state.lastX = e.clientX;
+            state.lastY = e.clientY;
+            draw();
+        });
+
+        window.addEventListener('resize', draw);
+
+        // Init
+        draw();
+        updateStats();
+    </script>
+</body>
+</html>
