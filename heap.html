@@ -458,8 +458,8 @@
             <div class="control-group">
                 <div class="group-title">Tipo Heap</div>
                 <div class="tab-group">
-                    <div class="tab active" data-type="max">Min Heap</div>
-                    <div class="tab" data-type="min">Max Heap</div>
+                    <div class="tab active" data-type="min">Min Heap</div>
+                    <div class="tab" data-type="max">Max Heap</div>
                 </div>
             </div>
 
@@ -554,6 +554,11 @@
             nodePositions: {},
         };
 
+        const initialTab = document.querySelector('.tab.active');
+        if (initialTab && initialTab.dataset.type) {
+            state.type = initialTab.dataset.type;
+        }
+
         function showToast(msg, type = 'info') {
             toast.textContent = msg;
             toast.className = `toast ${type} show`;
@@ -603,8 +608,8 @@
         }
 
         function compare(a, b) {
-            if (state.type === 'min') return a > b;
-            else return a < b;
+            if (state.type === 'min') return a < b;
+            else return a > b;
         }
 
         function swap(i, j) {
@@ -640,12 +645,12 @@
 
                 await highlight(index);
 
-                if (left < state.heap.length && compare(state.heap[smallest], state.heap[left])) {
-                    logTerminal(`Confronto ${state.heap[smallest]} con ${state.heap[left]} → seleziona sinistra`, 'info');
+                if (left < state.heap.length && compare(state.heap[left], state.heap[smallest])) {
+                    logTerminal(`Confronto ${state.heap[left]} con ${state.heap[smallest]} → seleziona sinistra`, 'info');
                     smallest = left;
                 }
-                if (right < state.heap.length && compare(state.heap[smallest], state.heap[right])) {
-                    logTerminal(`Confronto ${state.heap[smallest]} con ${state.heap[right]} → seleziona destra`, 'info');
+                if (right < state.heap.length && compare(state.heap[right], state.heap[smallest])) {
+                    logTerminal(`Confronto ${state.heap[right]} con ${state.heap[smallest]} → seleziona destra`, 'info');
                     smallest = right;
                 }
 
