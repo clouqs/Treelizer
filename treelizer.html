@@ -508,7 +508,10 @@
             <div class="control-group">
                 <div class="group-title">Inserimento Multiplo</div>
                 <input type="text" id="bulkVal" placeholder="10, 5, 15, 3, 7...">
-                <button class="btn-full btn-primary" id="bulkBtn">Genera Albero</button>
+                <div class="btn-grid">
+                    <button class="btn-primary" id="bulkBtn">Genera Albero</button>
+                    <button class="btn-primary" id="randomBtn">Casuale</button>
+                </div>
             </div>
 
             <div class="control-group">
@@ -1436,6 +1439,10 @@
             state.highlightNode = null;
             updateStats();
             draw();
+
+            document.getElementById('nodeVal').value = ''; // clear nodeVal input field
+            document.getElementById('bulkVal').value = ''; // clear bulkVal input field
+
             document.getElementById('traversalDisplay').textContent = '—';
             logTerminal('Struttura svuotata', 'success');
             showToast('Albero resettato', 'info');
@@ -1466,6 +1473,28 @@
             updateStats();
             document.getElementById('bulkVal').value = '';
             showToast(`${arr.length} nodi inseriti`, 'success');
+        });
+
+        // Random input button
+        document.getElementById('randomBtn').addEventListener('click', () => {
+            const count = Math.floor(Math.random() * 8) + 7; // 7-14 numbers
+            const values = [];
+            
+            for (let i = 0; i < count; i++) {
+                values.push(Math.floor(Math.random() * 100) + 1); // Numbers 1-100
+            }
+            
+            const inputStr = values.join(', ');
+            document.getElementById('bulkVal').value = inputStr;
+            
+            // Show preview
+            startOperation('Generazione casuale');
+            logTerminal(`Generati ${count} valori casuali`, 'success');
+            showToast(`${count} valori generati`, 'info');
+
+            setTimeout(() => {
+                document.getElementById('bulkBtn').click();
+            }, 500); // 500ms delay to show the preview
         });
 
         document.getElementById('inBtn').addEventListener('click', async () => {
