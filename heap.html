@@ -440,7 +440,7 @@
     <div class="container">
         <aside>
             <a href="treelizer.html" class="back-link">← Torna ai BST</a>
-            <h1>🌳 Heap</h1>
+            <h1>☁️​ Heaplizer</h1>
             <p class="subtitle">Min/Max Heap Interattivo</p>
 
             <div class="control-group">
@@ -476,6 +476,7 @@
                 <div class="group-title">Inserimento Multiplo</div>
                 <input type="text" id="bulkVal" placeholder="10, 5, 15, 3, 7...">
                 <button class="btn-full btn-primary" id="bulkBtn">Genera Heap</button>
+                <button class="btn-full btn-primary" id="randomHeapBtn">Casuale</button>
             </div>
 
             <div class="control-group">
@@ -639,29 +640,29 @@
 
         async function bubbleDown(index) {
             while (true) {
-                let smallest = index;
+                let targetIndex = index;
                 const left = getLeftChildIndex(index);
                 const right = getRightChildIndex(index);
 
                 await highlight(index);
 
-                if (left < state.heap.length && compare(state.heap[left], state.heap[smallest])) {
-                    logTerminal(`Confronto ${state.heap[left]} con ${state.heap[smallest]} → seleziona sinistra`, 'info');
-                    smallest = left;
+                if (left < state.heap.length && compare(state.heap[left], state.heap[targetIndex])) {
+                    logTerminal(`Confronto ${state.heap[left]} con ${state.heap[targetIndex]} → seleziona sinistra`, 'info');
+                    targetIndex = left;
                 }
-                if (right < state.heap.length && compare(state.heap[right], state.heap[smallest])) {
-                    logTerminal(`Confronto ${state.heap[right]} con ${state.heap[smallest]} → seleziona destra`, 'info');
-                    smallest = right;
+                if (right < state.heap.length && compare(state.heap[right], state.heap[targetIndex])) {
+                    logTerminal(`Confronto ${state.heap[right]} con ${state.heap[targetIndex]} → seleziona destra`, 'info');
+                    targetIndex = right;
                 }
 
-                if (smallest !== index) {
-                    await highlight(smallest);
-                    logTerminal(`Scambio ${state.heap[index]} con ${state.heap[smallest]}`, 'warn');
-                    swap(index, smallest);
+                if (targetIndex !== index) {
+                    await highlight(targetIndex);
+                    logTerminal(`Scambio ${state.heap[index]} con ${state.heap[targetIndex]}`, 'warn');
+                    swap(index, targetIndex);
                     calculatePositions();
                     draw();
                     await wait();
-                    index = smallest;
+                    index = targetIndex;
                 } else {
                     logTerminal('Heap ripristinato', 'success');
                     break;
@@ -929,6 +930,36 @@
             draw();
             showToast(`${arr.length} elementi inseriti`, 'success');
             document.getElementById('bulkVal').value = '';
+        });
+
+        document.getElementById('randomHeapBtn').addEventListener('click', async () => {
+            const randomLength = Math.floor(Math.random() * 16) + 5; // 5-20 elementi
+            const arr = [];
+            const usedValues = new Set();
+            while (arr.length < randomLength) {
+                const val = Math.floor(Math.random() * 500) + 1; // 1-500 per migliore distribuzione
+                if (!usedValues.has(val)) {
+                    arr.push(val);
+                    usedValues.add(val);
+                }
+            }
+
+            startOperation(`Generazione casuale (${arr.length} valori)`);
+            state.heap = [];
+            const oldSpeed = config.animSpeed;
+            config.animSpeed = 50;
+
+            for (let v of arr) {
+                logTerminal(`Inserisco ${v}`, 'info');
+                await insert(v, true);
+            }
+
+            config.animSpeed = oldSpeed;
+            state.highlightNode = null;
+            calculatePositions();
+            updateStats();
+            draw();
+            showToast(`${arr.length} elementi casuali inseriti`, 'success');
         });
 
         document.getElementById('speedSlider').addEventListener('input', (e) => {
