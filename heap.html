@@ -937,7 +937,7 @@
             const arr = [];
             const usedValues = new Set();
             while (arr.length < randomLength) {
-                const val = Math.floor(Math.random() * 500) + 1; // 1-500 per migliore distribuzione
+                const val = Math.floor(Math.random() * 100) + 1; // 1-100
                 if (!usedValues.has(val)) {
                     arr.push(val);
                     usedValues.add(val);
