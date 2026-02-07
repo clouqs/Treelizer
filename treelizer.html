@@ -1291,8 +1291,169 @@
             node.parent = left;
         }
 
-        // === MANUAL ROTATIONS ===
-        function manualRotateLeft() {
+        // === ANIMATED ROTATIONS ===
+        async function animateRotateLeft(node) {
+            if (!node || !node.right) return node;
+            
+            const title = `Rotazione sinistra su ${node.val}`;
+            startOperation(title);
+            logTerminal(`Inizio rotazione sinistra su ${node.val}`, 'info');
+            
+            // Highlight the pivot nodes
+            await highlight(node);
+            await highlight(node.right);
+            
+            const oldPositions = saveNodePositions();
+            const right = node.right;
+            
+            // Step 1: Show node.right taking node's position
+            logTerminal(`Step 1: ${right.val} prende il posto di ${node.val}`, 'info');
+            node.right = right.left;
+            if (right.left) {
+                logTerminal(`Il sottoalbero sinistro di ${right.val} diventa figlio destro di ${node.val}`, 'info');
+                right.left.parent = node;
+                await highlight(right.left);
+            }
+            
+            right.left = node;
+            logTerminal(`Step 2: ${node.val} diventa figlio sinistro di ${right.val}`, 'info');
+            
+            // Update parent pointers for RBT
+            if (state.type === 'rbt') {
+                right.parent = node.parent;
+                node.parent = right;
+                if (right.left) right.left.parent = node;
+            }
+            
+            // Update root if needed
+            if (!node.parent) {
+                state.root = right;
+                logTerminal(`${right.val} diventa la nuova radice`, 'success');
+            } else if (node === node.parent.left) {
+                node.parent.left = right;
+            } else {
+                node.parent.right = right;
+            }
+            
+            // Animate the transition
+            await animatePositionChange(oldPositions);
+            
+            calculatePositions();
+            draw();
+            logTerminal(`Rotazione sinistra completata su ${node.val}`, 'success');
+            showToast(`Rotazione sinistra completata`, 'success');
+            
+            return right;
+        }
+
+        async function animateRotateRight(node) {
+            if (!node || !node.left) return node;
+            
+            const title = `Rotazione destra su ${node.val}`;
+            startOperation(title);
+            logTerminal(`Inizio rotazione destra su ${node.val}`, 'info');
+            
+            // Highlight the pivot nodes
+            await highlight(node);
+            await highlight(node.left);
+            
+            const oldPositions = saveNodePositions();
+            const left = node.left;
+            
+            // Step 1: Show node.left taking node's position
+            logTerminal(`Step 1: ${left.val} prende il posto di ${node.val}`, 'info');
+            node.left = left.right;
+            if (left.right) {
+                logTerminal(`Il sottoalbero destro di ${left.val} diventa figlio sinistro di ${node.val}`, 'info');
+                left.right.parent = node;
+                await highlight(left.right);
+            }
+            
+            left.right = node;
+            logTerminal(`Step 2: ${node.val} diventa figlio destro di ${left.val}`, 'info');
+            
+            // Update parent pointers for RBT
+            if (state.type === 'rbt') {
+                left.parent = node.parent;
+                node.parent = left;
+                if (left.right) left.right.parent = node;
+            }
+            
+            // Update root if needed
+            if (!node.parent) {
+                state.root = left;
+                logTerminal(`${left.val} diventa la nuova radice`, 'success');
+            } else if (node === node.parent.left) {
+                node.parent.left = left;
+            } else {
+                node.parent.right = left;
+            }
+            
+            // Animate the transition
+            await animatePositionChange(oldPositions);
+            
+            calculatePositions();
+            draw();
+            logTerminal(`Rotazione destra completata su ${node.val}`, 'success');
+            showToast(`Rotazione destra completata`, 'success');
+            
+            return left;
+        }
+
+        // Helper function to save current node positions for animation
+        function saveNodePositions() {
+            const positions = new Map();
+            function savePos(node) {
+                if (!node) return;
+                positions.set(node, { x: node.x, y: node.y });
+                savePos(node.left);
+                savePos(node.right);
+            }
+            savePos(state.root);
+            return positions;
+        }
+
+        // Animate nodes moving from old to new positions
+        async function animatePositionChange(oldPositions) {
+            const steps = 20;
+            const duration = config.animSpeed * 0.8;
+            const stepDelay = duration / steps;
+            
+            // Calculate new positions
+            calculatePositions();
+            const newPositions = saveNodePositions();
+            
+            // Reset to old positions for animation
+            oldPositions.forEach((pos, node) => {
+                node.x = pos.x;
+                node.y = pos.y;
+            });
+            
+            // Animate each step
+            for (let i = 0; i <= steps; i++) {
+                const progress = i / steps;
+                
+                oldPositions.forEach((oldPos, node) => {
+                    const newPos = newPositions.get(node);
+                    if (newPos) {
+                        node.x = oldPos.x + (newPos.x - oldPos.x) * progress;
+                        node.y = oldPos.y + (newPos.y - oldPos.y) * progress;
+                    }
+                });
+                
+                draw();
+                await new Promise(resolve => setTimeout(resolve, stepDelay));
+            }
+            
+            // Ensure final positions are exact
+            newPositions.forEach((pos, node) => {
+                node.x = pos.x;
+                node.y = pos.y;
+            });
+        }
+
+        // === UPDATED MANUAL ROTATIONS WITH ANIMATION ===
+        async function manualRotateLeft() {
             startOperation('Rotazione sinistra manuale');
             if (!state.selectedNode || !state.selectedNode.right) {
                 logTerminal('Seleziona un nodo con figlio destro', 'error');
@@ -1300,29 +1461,24 @@
                 return;
             }
 
+            // Store original node for re-selection
+            const originalNode = state.selectedNode;
+            
             if (state.type === 'rbt') {
-                rotateLeft(state.selectedNode);
+                await animateRotateLeft(state.selectedNode);
             } else {
-                // BST rotation
-                let parent = findParent(state.root, state.selectedNode);
-                let node = state.selectedNode;
-                let right = node.right;
-
-                node.right = right.left;
-                right.left = node;
-
-                if (!parent) state.root = right;
-                else if (parent.left === node) parent.left = right;
-                else parent.right = right;
+                // BST rotation with animation
+                await animateRotateLeftBST(state.selectedNode);
             }
-
+            
+            // Try to re-select the new position of the original node
+            state.selectedNode = findNodeByValue(state.root, originalNode.val);
+            
             calculatePositions();
             draw();
-            logTerminal(`Rotazione sinistra su ${state.selectedNode.val}`, 'success');
-            showToast('Rotazione sinistra completata', 'success');
         }
 
-        function manualRotateRight() {
+        async function manualRotateRight() {
             startOperation('Rotazione destra manuale');
             if (!state.selectedNode || !state.selectedNode.left) {
                 logTerminal('Seleziona un nodo con figlio sinistro', 'error');
@@ -1330,25 +1486,105 @@
                 return;
             }
 
+            // Store original node for re-selection
+            const originalNode = state.selectedNode;
+            
             if (state.type === 'rbt') {
-                rotateRight(state.selectedNode);
+                await animateRotateRight(state.selectedNode);
             } else {
-                let parent = findParent(state.root, state.selectedNode);
-                let node = state.selectedNode;
-                let left = node.left;
-
-                node.left = left.right;
-                left.right = node;
-
-                if (!parent) state.root = left;
-                else if (parent.left === node) parent.left = left;
-                else parent.right = left;
+                // BST rotation with animation
+                await animateRotateRightBST(state.selectedNode);
             }
-
+            
+            // Try to re-select the new position of the original node
+            state.selectedNode = findNodeByValue(state.root, originalNode.val);
+            
             calculatePositions();
             draw();
-            logTerminal(`Rotazione destra su ${state.selectedNode.val}`, 'success');
-            showToast('Rotazione destra completata', 'success');
+        }
+
+        // === ANIMATED BST ROTATIONS (without parent pointers) ===
+        async function animateRotateLeftBST(node) {
+            if (!node || !node.right) return node;
+            
+            logTerminal(`Inizio rotazione sinistra BST su ${node.val}`, 'info');
+            await highlight(node);
+            await highlight(node.right);
+            
+            const oldPositions = saveNodePositions();
+            const right = node.right;
+            const parent = findParent(state.root, node);
+            
+            // Step 1: Reassign right.left to node.right
+            node.right = right.left;
+            if (right.left) {
+                logTerminal(`Sottoalbero sinistro di ${right.val} diventa figlio destro di ${node.val}`, 'info');
+                await highlight(right.left);
+            }
+            
+            // Step 2: Make node the left child of right
+            right.left = node;
+            logTerminal(`${node.val} diventa figlio sinistro di ${right.val}`, 'info');
+            
+            // Step 3: Update parent
+            if (!parent) {
+                state.root = right;
+                logTerminal(`${right.val} diventa nuova radice`, 'success');
+            } else if (parent.left === node) {
+                parent.left = right;
+            } else {
+                parent.right = right;
+            }
+            
+            await animatePositionChange(oldPositions);
+            return right;
+        }
+
+        async function animateRotateRightBST(node) {
+            if (!node || !node.left) return node;
+            
+            logTerminal(`Inizio rotazione destra BST su ${node.val}`, 'info');
+            await highlight(node);
+            await highlight(node.left);
+            
+            const oldPositions = saveNodePositions();
+            const left = node.left;
+            const parent = findParent(state.root, node);
+            
+            // Step 1: Reassign left.right to node.left
+            node.left = left.right;
+            if (left.right) {
+                logTerminal(`Sottoalbero destro di ${left.val} diventa figlio sinistro di ${node.val}`, 'info');
+                await highlight(left.right);
+            }
+            
+            // Step 2: Make node the right child of left
+            left.right = node;
+            logTerminal(`${node.val} diventa figlio destro di ${left.val}`, 'info');
+            
+            // Step 3: Update parent
+            if (!parent) {
+                state.root = left;
+                logTerminal(`${left.val} diventa nuova radice`, 'success');
+            } else if (parent.left === node) {
+                parent.left = left;
+            } else {
+                parent.right = left;
+            }
+            
+            await animatePositionChange(oldPositions);
+            return left;
+        }
+
+        // Helper function to find node by value
+        function findNodeByValue(root, val) {
+            if (!root) return null;
+            if (root.val === val) return root;
+            
+            const leftResult = findNodeByValue(root.left, val);
+            if (leftResult) return leftResult;
+            
+            return findNodeByValue(root.right, val);
         }
 
         function findParent(root, node) {
