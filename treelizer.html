@@ -30,7 +30,6 @@
             --black-node: #1e293b;
         }
 
-        /* Theme Ocean */
         [data-theme="ocean"] {
             --bg-dark: #0a1628;
             --primary: #0ea5e9;
@@ -39,7 +38,6 @@
             --node-border: #0ea5e9;
         }
 
-        /* Theme Sunset */
         [data-theme="sunset"] {
             --bg-dark: #1a0f1e;
             --primary: #f97316;
@@ -48,7 +46,6 @@
             --node-border: #f97316;
         }
 
-        /* Theme Forest */
         [data-theme="forest"] {
             --bg-dark: #0f1a14;
             --primary: #22c55e;
@@ -57,7 +54,6 @@
             --node-border: #22c55e;
         }
 
-        /* Theme Cyber */
         [data-theme="cyber"] {
             --bg-dark: #0d0d1a;
             --primary: #a855f7;
@@ -66,7 +62,6 @@
             --node-border: #a855f7;
         }
 
-        /* Theme Amber */
         [data-theme="amber"] {
             --bg-dark: #1a1410;
             --primary: #f59e0b;
@@ -94,7 +89,6 @@
             height: 100vh;
         }
 
-        /* Sidebar */
         aside {
             width: 340px;
             background: var(--bg-panel);
@@ -137,7 +131,6 @@
             font-weight: 600;
         }
 
-        /* Theme Selector */
         .theme-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -159,17 +152,9 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .theme-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .theme-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .theme-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .theme-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* Inputs & Buttons */
         input[type="number"], input[type="text"] {
             width: 100%;
             background: rgba(0, 0, 0, 0.2);
@@ -188,17 +173,8 @@
             box-shadow: 0 0 0 3px var(--primary-glow);
         }
 
-        .btn-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .btn-grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-        }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 
         button {
             padding: 10px 14px;
@@ -213,38 +189,14 @@
             font-family: 'Inter', sans-serif;
         }
 
-        button:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
-        }
+        button:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2563eb;
-            box-shadow: 0 4px 12px var(--primary-glow);
-        }
-
-        .btn-danger {
-            color: var(--danger);
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .btn-full {
-            grid-column: 1 / -1;
-        }
+        .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
+        .btn-primary:hover { background: #2563eb; box-shadow: 0 4px 12px var(--primary-glow); }
+        .btn-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
+        .btn-full { grid-column: 1 / -1; }
 
         .tab-group {
             display: flex;
@@ -272,7 +224,6 @@
             font-weight: 600;
         }
 
-        /* Sliders */
         .slider-wrapper {
             display: flex;
             align-items: center;
@@ -281,13 +232,8 @@
             color: var(--text-muted);
         }
 
-        input[type="range"] {
-            flex: 1;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
+        input[type="range"] { flex: 1; accent-color: var(--primary); cursor: pointer; }
 
-        /* Stats */
         .stats-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -298,24 +244,10 @@
             margin-top: auto;
         }
 
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-        }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-label { font-size: 0.7rem; color: var(--text-muted); }
+        .stat-value { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--accent); }
 
-        .stat-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .stat-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--accent);
-        }
-
-        /* Terminal */
         .terminal-panel {
             background: rgba(0, 0, 0, 0.25);
             border: 1px solid var(--border);
@@ -329,28 +261,12 @@
             line-height: 1.4;
         }
 
-        .terminal-line {
-            margin-bottom: 6px;
-            color: var(--text-muted);
-        }
+        .terminal-line { margin-bottom: 6px; color: var(--text-muted); }
+        .terminal-line:last-child { margin-bottom: 0; }
+        .terminal-line.success { color: var(--success); }
+        .terminal-line.error { color: var(--danger); }
+        .terminal-line.warn { color: var(--warning); }
 
-        .terminal-line:last-child {
-            margin-bottom: 0;
-        }
-
-        .terminal-line.success {
-            color: var(--success);
-        }
-
-        .terminal-line.error {
-            color: var(--danger);
-        }
-
-        .terminal-line.warn {
-            color: var(--warning);
-        }
-
-        /* Main Area */
         main {
             flex: 1;
             position: relative;
@@ -362,15 +278,10 @@
             cursor: grab;
         }
 
-        main:active {
-            cursor: grabbing;
-        }
+        main:active { cursor: grabbing; }
 
-        #treeCanvas {
-            display: block;
-        }
+        #treeCanvas { display: block; }
 
-        /* Toast Notification */
         .toast {
             position: absolute;
             bottom: 30px;
@@ -390,20 +301,10 @@
             font-size: 0.9rem;
         }
 
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
 
-        .toast.success {
-            border-left-color: var(--success);
-        }
-
-        .toast.error {
-            border-left-color: var(--danger);
-        }
-
-        /* Legend overlay */
         .legend {
             position: absolute;
             top: 20px;
@@ -435,10 +336,7 @@
             margin-bottom: 8px;
         }
 
-        .color-picker-row label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
+        .color-picker-row label { font-size: 0.8rem; color: var(--text-muted); }
 
         input[type="color"] {
             width: 50px;
@@ -462,9 +360,7 @@
             transition: all 0.2s;
         }
 
-        .back-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .back-link:hover { background: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
@@ -605,12 +501,11 @@
         const toast = document.getElementById('toast');
         const terminalLog = document.getElementById('terminalLog');
 
-        // Configurazione migliorata per spaziatura simmetrica
         const config = {
             nodeRadius: 22,
             lineWidth: 2,
-            vSpacing: 80,  // Spaziatura verticale fissa
-            minHSpacing: 25,  // Spaziatura orizzontale minima
+            vSpacing: 80,
+            minHSpacing: 25,
             animSpeed: 500,
         };
 
@@ -704,35 +599,24 @@
             document.getElementById('heightDisplay').textContent = getHeight(state.root);
         }
 
-        // === LAYOUT ELEGANTE CON SPAZIATURA UNIFORME ===
+        // === LAYOUT ===
         function calculatePositions() {
             if (!state.root) return;
 
-            // Conta i nodi a ogni livello per distribuire equamente lo spazio
             function getSubtreeHeight(node) {
                 if (!node) return 0;
                 return 1 + Math.max(getSubtreeHeight(node.left), getSubtreeHeight(node.right));
             }
 
-            // Assegna posizioni con spaziatura uniforme
             function assignPositions(node, x, y) {
                 if (!node) return;
-
                 node.x = x;
                 node.y = y;
-
                 if (!node.left && !node.right) return;
-
                 const height = getSubtreeHeight(node);
                 const offset = config.minHSpacing * Math.pow(2, height - 2);
-
-                if (node.left) {
-                    assignPositions(node.left, x - offset, y + config.vSpacing);
-                }
-
-                if (node.right) {
-                    assignPositions(node.right, x + offset, y + config.vSpacing);
-                }
+                if (node.left) assignPositions(node.left, x - offset, y + config.vSpacing);
+                if (node.right) assignPositions(node.right, x + offset, y + config.vSpacing);
             }
 
             assignPositions(state.root, 0, 50);
@@ -794,7 +678,6 @@
             let text = '#f1f5f9';
             let border = state.customColors.border;
 
-            // RBT coloring
             if (state.type === 'rbt') {
                 if (node.color === 'red') {
                     fill = state.customColors.red;
@@ -807,7 +690,6 @@
                 }
             }
 
-            // Stati
             if (state.highlightNode === node) {
                 fill = 'rgba(251, 191, 36, 0.4)';
                 border = '#fbbf24';
@@ -815,18 +697,12 @@
                 fill = 'rgba(16, 185, 129, 0.4)';
             }
 
-            if (state.selectedNode === node) {
-                ctx.lineWidth = 4;
-            } else {
-                ctx.lineWidth = 3;
-            }
-
+            ctx.lineWidth = state.selectedNode === node ? 4 : 3;
             ctx.fillStyle = fill;
             ctx.fill();
             ctx.strokeStyle = border;
             ctx.stroke();
 
-            // Testo
             ctx.fillStyle = text;
             ctx.font = 'bold 16px Inter';
             ctx.textAlign = 'center';
@@ -855,7 +731,6 @@
             let curr = state.root;
             while (true) {
                 await highlight(curr);
-
                 logTerminal(`Confronto ${val} con ${curr.val}`, 'info');
 
                 if (val < curr.val) {
@@ -892,7 +767,7 @@
             draw();
         }
 
-        // === BST DELETE (CORRETTO) ===
+        // === BST DELETE ===
         async function deleteBST(val) {
             startOperation(`Eliminazione ${val} (BST)`);
             state.visitedNodes.clear();
@@ -911,7 +786,6 @@
             }
 
             await highlight(node);
-
             logTerminal(`Confronto ${val} con ${node.val}`, 'info');
 
             if (val < node.val) {
@@ -921,7 +795,6 @@
                 logTerminal(`${val} > ${node.val} → vai a destra`, 'info');
                 node.right = await deleteBSTNode(node.right, val);
             } else {
-                // Nodo trovato
                 logTerminal(`Nodo ${val} trovato`, 'success');
                 if (!node.left && !node.right) {
                     logTerminal(`Elimino foglia ${val}`, 'success');
@@ -936,7 +809,6 @@
                     showToast(`Nodo ${val} eliminato (1 figlio sx)`, 'success');
                     return node.left;
                 } else {
-                    // Due figli: trova successore
                     let successor = findMin(node.right);
                     logTerminal(`Due figli: successore = ${successor.val}`, 'info');
                     await highlight(successor);
@@ -961,7 +833,6 @@
 
             while (curr) {
                 await highlight(curr);
-
                 logTerminal(`Confronto ${val} con ${curr.val}`, 'info');
 
                 if (curr.val === val) {
@@ -984,173 +855,106 @@
             draw();
         }
 
-        // === TRAVERSALS (CORRETTI) ===
+        // === TRAVERSALS ===
         async function inOrderTraversal(node, result = []) {
             if (!node) return result;
-
             await inOrderTraversal(node.left, result);
-            
             await highlight(node);
             logTerminal(`Visita ${node.val} (In-Order)`, 'info');
             result.push(node.val);
-            
             await inOrderTraversal(node.right, result);
-
             return result;
         }
 
         async function preOrderTraversal(node, result = []) {
             if (!node) return result;
-
             await highlight(node);
             logTerminal(`Visita ${node.val} (Pre-Order)`, 'info');
             result.push(node.val);
-
             await preOrderTraversal(node.left, result);
             await preOrderTraversal(node.right, result);
-
             return result;
         }
 
         async function postOrderTraversal(node, result = []) {
             if (!node) return result;
-
             await postOrderTraversal(node.left, result);
             await postOrderTraversal(node.right, result);
-
             await highlight(node);
             logTerminal(`Visita ${node.val} (Post-Order)`, 'info');
             result.push(node.val);
-
             return result;
         }
 
-        // === MIN/MAX ===
+        // === MIN / MAX ===
         function findMin(node) {
-            while (node && node.left) {
-                node = node.left;
-            }
+            while (node && node.left) node = node.left;
             return node;
         }
 
         function findMax(node) {
-            while (node && node.right) {
-                node = node.right;
-            }
+            while (node && node.right) node = node.right;
             return node;
         }
 
         async function animateFindMin() {
-            if (!state.root) {
-                startOperation('Ricerca Minimo');
-                logTerminal('Albero vuoto', 'error');
-                showToast('Albero vuoto', 'error');
-                return;
-            }
-
+            if (!state.root) { startOperation('Ricerca Minimo'); logTerminal('Albero vuoto', 'error'); showToast('Albero vuoto', 'error'); return; }
             startOperation('Ricerca Minimo');
             state.visitedNodes.clear();
             let node = state.root;
-
             while (node) {
                 await highlight(node);
-                if (!node.left) {
-                    state.selectedNode = node;
-                    logTerminal(`Minimo trovato: ${node.val}`, 'success');
-                    showToast(`Minimo: ${node.val}`, 'success');
-                    state.highlightNode = null;
-                    draw();
-                    return;
-                }
+                if (!node.left) { state.selectedNode = node; logTerminal(`Minimo trovato: ${node.val}`, 'success'); showToast(`Minimo: ${node.val}`, 'success'); state.highlightNode = null; draw(); return; }
                 logTerminal(`${node.val} ha figlio sinistro → vai a sinistra`, 'info');
                 node = node.left;
             }
         }
 
         async function animateFindMax() {
-            if (!state.root) {
-                startOperation('Ricerca Massimo');
-                logTerminal('Albero vuoto', 'error');
-                showToast('Albero vuoto', 'error');
-                return;
-            }
-
+            if (!state.root) { startOperation('Ricerca Massimo'); logTerminal('Albero vuoto', 'error'); showToast('Albero vuoto', 'error'); return; }
             startOperation('Ricerca Massimo');
             state.visitedNodes.clear();
             let node = state.root;
-
             while (node) {
                 await highlight(node);
-                if (!node.right) {
-                    state.selectedNode = node;
-                    logTerminal(`Massimo trovato: ${node.val}`, 'success');
-                    showToast(`Massimo: ${node.val}`, 'success');
-                    state.highlightNode = null;
-                    draw();
-                    return;
-                }
+                if (!node.right) { state.selectedNode = node; logTerminal(`Massimo trovato: ${node.val}`, 'success'); showToast(`Massimo: ${node.val}`, 'success'); state.highlightNode = null; draw(); return; }
                 logTerminal(`${node.val} ha figlio destro → vai a destra`, 'info');
                 node = node.right;
             }
         }
 
-        // === SUCCESSOR/PREDECESSOR ===
+        // === SUCCESSOR / PREDECESSOR ===
         function getSuccessor(root, node) {
-            logTerminal(`Successore di ${node.val}`, 'info');
             if (node.right) return findMin(node.right);
-
             let successor = null;
             let current = root;
-
             while (current) {
-                if (node.val < current.val) {
-                    logTerminal(`${node.val} < ${current.val} → candidato ${current.val}`, 'info');
-                    successor = current;
-                    current = current.left;
-                } else if (node.val > current.val) {
-                    logTerminal(`${node.val} > ${current.val} → vai a destra`, 'info');
-                    current = current.right;
-                } else {
-                    break;
-                }
+                if (node.val < current.val) { successor = current; current = current.left; }
+                else if (node.val > current.val) { current = current.right; }
+                else break;
             }
-
             return successor;
         }
 
         function getPredecessor(root, node) {
-            logTerminal(`Predecessore di ${node.val}`, 'info');
             if (node.left) return findMax(node.left);
-
             let predecessor = null;
             let current = root;
-
             while (current) {
-                if (node.val > current.val) {
-                    logTerminal(`${node.val} > ${current.val} → candidato ${current.val}`, 'info');
-                    predecessor = current;
-                    current = current.right;
-                } else if (node.val < current.val) {
-                    logTerminal(`${node.val} < ${current.val} → vai a sinistra`, 'info');
-                    current = current.left;
-                } else {
-                    break;
-                }
+                if (node.val > current.val) { predecessor = current; current = current.right; }
+                else if (node.val < current.val) { current = current.left; }
+                else break;
             }
-
             return predecessor;
         }
 
         // === BUILD BALANCED BST ===
         function buildBalancedBST(arr, start = 0, end = arr.length - 1) {
             if (start > end) return null;
-
             const mid = Math.floor((start + end) / 2);
             const node = new Node(arr[mid]);
-
             node.left = buildBalancedBST(arr, start, mid - 1);
             node.right = buildBalancedBST(arr, mid + 1, end);
-
             return node;
         }
 
@@ -1176,29 +980,14 @@
 
             while (curr) {
                 parent = curr;
-                logTerminal(`Confronto ${val} con ${curr.val}`, 'info');
-                if (val < curr.val) {
-                    logTerminal(`${val} < ${curr.val} → vai a sinistra`, 'info');
-                    curr = curr.left;
-                } else if (val > curr.val) {
-                    logTerminal(`${val} > ${curr.val} → vai a destra`, 'info');
-                    curr = curr.right;
-                }
-                else {
-                    logTerminal(`Valore ${val} già presente`, 'error');
-                    showToast(`Valore ${val} già presente`, 'error');
-                    return;
-                }
+                if (val < curr.val) curr = curr.left;
+                else if (val > curr.val) curr = curr.right;
+                else { logTerminal(`Valore ${val} già presente`, 'error'); showToast(`Valore ${val} già presente`, 'error'); return; }
             }
 
             newNode.parent = parent;
-            if (val < parent.val) {
-                parent.left = newNode;
-                logTerminal(`Inserito come figlio sinistro di ${parent.val}`, 'success');
-            } else {
-                parent.right = newNode;
-                logTerminal(`Inserito come figlio destro di ${parent.val}`, 'success');
-            }
+            if (val < parent.val) { parent.left = newNode; logTerminal(`Inserito come figlio sinistro di ${parent.val}`, 'success'); }
+            else { parent.right = newNode; logTerminal(`Inserito come figlio destro di ${parent.val}`, 'success'); }
 
             fixRBT(newNode);
             calculatePositions();
@@ -1210,12 +999,10 @@
             while (node !== state.root && node.parent && node.parent.color === 'red') {
                 let parent = node.parent;
                 let grand = parent.parent;
-
                 if (!grand) break;
 
                 if (parent === grand.left) {
                     let uncle = grand.right;
-
                     if (uncle && uncle.color === 'red') {
                         logTerminal('Caso 1: zio rosso, ricolorazione', 'warn');
                         parent.color = 'black';
@@ -1236,7 +1023,6 @@
                     }
                 } else {
                     let uncle = grand.left;
-
                     if (uncle && uncle.color === 'red') {
                         logTerminal('Caso 1: zio rosso, ricolorazione', 'warn');
                         parent.color = 'black';
@@ -1257,21 +1043,294 @@
                     }
                 }
             }
-
             state.root.color = 'black';
         }
 
+        // =====================================================================
+        // === RBT DELETE — ALGORITMO COMPLETO (CLRS) ===
+        // =====================================================================
+
+        /**
+         * rbTransplant: sostituisce il sottoalbero radicato in u con quello radicato in v.
+         * Aggiorna il puntatore parent di v e il puntatore figlio del genitore di u.
+         */
+        function rbTransplant(u, v) {
+            if (!u.parent) {
+                // u era la radice
+                state.root = v;
+            } else if (u === u.parent.left) {
+                u.parent.left = v;
+            } else {
+                u.parent.right = v;
+            }
+            if (v) v.parent = u.parent;
+        }
+
+        /**
+         * nodeColor: restituisce il colore di un nodo (null = sentinella nera).
+         */
+        function nodeColor(n) {
+            return n ? n.color : 'black';
+        }
+
+        /**
+         * deleteRBT: rimuove il nodo con valore val dall'albero RBT.
+         * Implementa l'algoritmo CLRS con 6 casi di fixup double-black.
+         */
+        async function deleteRBT(val) {
+            startOperation(`Eliminazione ${val} (RBT)`);
+            state.visitedNodes.clear();
+            state.highlightNode = null;
+
+            // Fase 1: ricerca animata del nodo
+            let z = state.root;
+            while (z) {
+                await highlight(z);
+                logTerminal(`Confronto ${val} con ${z.val}`, 'info');
+                if (val < z.val) {
+                    logTerminal(`${val} < ${z.val} → vai a sinistra`, 'info');
+                    z = z.left;
+                } else if (val > z.val) {
+                    logTerminal(`${val} > ${z.val} → vai a destra`, 'info');
+                    z = z.right;
+                } else {
+                    logTerminal(`Nodo ${val} trovato (colore: ${z.color})`, 'success');
+                    break;
+                }
+            }
+
+            if (!z) {
+                logTerminal(`Valore ${val} non trovato`, 'error');
+                showToast(`Valore ${val} non trovato`, 'error');
+                state.highlightNode = null;
+                draw();
+                updateStats();
+                return;
+            }
+
+            // Fase 2: rimozione RBT
+            // y = nodo che verrà effettivamente rimosso/spostato
+            // x = figlio che rimpiazza y (può essere null = sentinella nera)
+            // xParent = genitore di x (necessario perché x può essere null)
+
+            let y = z;
+            let yOriginalColor = y.color;
+            let x, xParent;
+
+            if (!z.left) {
+                // Caso A: z non ha figlio sinistro
+                x = z.right;
+                xParent = z.parent;
+                logTerminal(`Caso A: z non ha figlio sinistro`, 'info');
+                rbTransplant(z, z.right);
+            } else if (!z.right) {
+                // Caso B: z non ha figlio destro
+                x = z.left;
+                xParent = z.parent;
+                logTerminal(`Caso B: z non ha figlio destro`, 'info');
+                rbTransplant(z, z.left);
+            } else {
+                // Caso C: z ha due figli — trova il successore (minimo del sottoalbero destro)
+                y = findMin(z.right);
+                yOriginalColor = y.color;
+                x = y.right;
+                logTerminal(`Caso C: due figli — successore y = ${y.val} (${y.color})`, 'info');
+
+                await highlight(y);
+
+                if (y.parent === z) {
+                    // y è il figlio diretto destro di z
+                    xParent = y;
+                    logTerminal(`y è figlio diretto di z`, 'info');
+                } else {
+                    // y è più in profondità: stacca y dalla sua posizione
+                    xParent = y.parent;
+                    rbTransplant(y, y.right);
+                    y.right = z.right;
+                    y.right.parent = y;
+                    logTerminal(`Stacco y dalla sua posizione originale`, 'info');
+                }
+
+                // Metti y al posto di z
+                rbTransplant(z, y);
+                y.left = z.left;
+                y.left.parent = y;
+                y.color = z.color;
+                logTerminal(`Sostituisco z(${z.val}) con y(${y.val}), colore di y → ${y.color}`, 'info');
+            }
+
+            // Fase 3: fixup se il nodo rimosso era nero (viola la proprietà "black-height")
+            if (yOriginalColor === 'black') {
+                logTerminal(`y era nero → fixup double-black`, 'warn');
+                calculatePositions();
+                draw();
+                await wait();
+                await fixDeleteRBT(x, xParent);
+            }
+
+            state.highlightNode = null;
+            state.visitedNodes.clear();
+            calculatePositions();
+            draw();
+            updateStats();
+            showToast(`Nodo ${val} eliminato dall'RBT`, 'success');
+            logTerminal(`Eliminazione ${val} completata`, 'success');
+        }
+
+        /**
+         * fixDeleteRBT: risolve la violazione "double-black" dopo la cancellazione.
+         * x è il nodo double-black (può essere null = sentinella), xParent è suo padre.
+         * Implementa i 4 casi CLRS (+ speculari), con animazioni e log.
+         */
+        async function fixDeleteRBT(x, xParent) {
+            while (x !== state.root && nodeColor(x) === 'black') {
+                logTerminal(`Fixup: x = ${x ? x.val : 'NIL'}, parent = ${xParent ? xParent.val : 'NIL'}`, 'info');
+
+                if (x === (xParent ? xParent.left : null)) {
+                    // x è il figlio SINISTRO
+                    let w = xParent ? xParent.right : null; // fratello di x
+                    logTerminal(`Fratello w = ${w ? w.val + '(' + w.color + ')' : 'NIL'}`, 'info');
+
+                    if (nodeColor(w) === 'red') {
+                        // ── CASO 1 ──  w è rosso
+                        logTerminal(`Caso 1 (sx): fratello rosso → rotolorazione`, 'warn');
+                        w.color = 'black';
+                        xParent.color = 'red';
+                        if (x) await highlight(x);
+                        await highlight(w);
+                        await highlight(xParent);
+                        rotateLeft(xParent);
+                        calculatePositions(); draw(); await wait();
+                        w = xParent.right;
+                        logTerminal(`Nuovo fratello w = ${w ? w.val : 'NIL'}`, 'info');
+                    }
+
+                    if (nodeColor(w ? w.left : null) === 'black' && nodeColor(w ? w.right : null) === 'black') {
+                        // ── CASO 2 ──  w nero con figli neri → sposta double-black in su
+                        logTerminal(`Caso 2 (sx): fratello e figli neri → ricolorazione w in rosso`, 'warn');
+                        if (w) {
+                            w.color = 'red';
+                            await highlight(w);
+                        }
+                        calculatePositions(); draw(); await wait();
+                        x = xParent;
+                        xParent = x.parent;
+                    } else {
+                        if (nodeColor(w ? w.right : null) === 'black') {
+                            // ── CASO 3 ──  figlio destro di w nero, sinistro rosso → rotazione destra su w
+                            logTerminal(`Caso 3 (sx): figlio dx di w nero → rotazione destra su w`, 'warn');
+                            if (w && w.left) {
+                                w.left.color = 'black';
+                                await highlight(w.left);
+                            }
+                            if (w) {
+                                w.color = 'red';
+                                await highlight(w);
+                            }
+                            if (w) rotateRight(w);
+                            calculatePositions(); draw(); await wait();
+                            w = xParent ? xParent.right : null;
+                            logTerminal(`Nuovo fratello w = ${w ? w.val : 'NIL'}`, 'info');
+                        }
+                        // ── CASO 4 ──  figlio destro di w rosso → rotazione sinistra su xParent
+                        logTerminal(`Caso 4 (sx): figlio dx di w rosso → rotazione sinistra su parent`, 'warn');
+                        if (w) {
+                            w.color = xParent.color;
+                            await highlight(w);
+                        }
+                        xParent.color = 'black';
+                        await highlight(xParent);
+                        if (w && w.right) {
+                            w.right.color = 'black';
+                            await highlight(w.right);
+                        }
+                        rotateLeft(xParent);
+                        calculatePositions(); draw(); await wait();
+                        x = state.root; // termina il ciclo
+                    }
+                } else {
+                    // x è il figlio DESTRO (casi speculari)
+                    let w = xParent ? xParent.left : null;
+                    logTerminal(`Fratello w = ${w ? w.val + '(' + w.color + ')' : 'NIL'}`, 'info');
+
+                    if (nodeColor(w) === 'red') {
+                        // ── CASO 1 speculare ──
+                        logTerminal(`Caso 1 (dx): fratello rosso → ricolorazione`, 'warn');
+                        w.color = 'black';
+                        xParent.color = 'red';
+                        if (x) await highlight(x);
+                        await highlight(w);
+                        await highlight(xParent);
+                        rotateRight(xParent);
+                        calculatePositions(); draw(); await wait();
+                        w = xParent.left;
+                        logTerminal(`Nuovo fratello w = ${w ? w.val : 'NIL'}`, 'info');
+                    }
+
+                    if (nodeColor(w ? w.right : null) === 'black' && nodeColor(w ? w.left : null) === 'black') {
+                        // ── CASO 2 speculare ──
+                        logTerminal(`Caso 2 (dx): fratello e figli neri → ricolorazione w in rosso`, 'warn');
+                        if (w) {
+                            w.color = 'red';
+                            await highlight(w);
+                        }
+                        calculatePositions(); draw(); await wait();
+                        x = xParent;
+                        xParent = x.parent;
+                    } else {
+                        if (nodeColor(w ? w.left : null) === 'black') {
+                            // ── CASO 3 speculare ──
+                            logTerminal(`Caso 3 (dx): figlio sx di w nero → rotazione sinistra su w`, 'warn');
+                            if (w && w.right) {
+                                w.right.color = 'black';
+                                await highlight(w.right);
+                            }
+                            if (w) {
+                                w.color = 'red';
+                                await highlight(w);
+                            }
+                            if (w) rotateLeft(w);
+                            calculatePositions(); draw(); await wait();
+                            w = xParent ? xParent.left : null;
+                            logTerminal(`Nuovo fratello w = ${w ? w.val : 'NIL'}`, 'info');
+                        }
+                        // ── CASO 4 speculare ──
+                        logTerminal(`Caso 4 (dx): figlio sx di w rosso → rotazione destra su parent`, 'warn');
+                        if (w) {
+                            w.color = xParent.color;
+                            await highlight(w);
+                        }
+                        xParent.color = 'black';
+                        await highlight(xParent);
+                        if (w && w.left) {
+                            w.left.color = 'black';
+                            await highlight(w.left);
+                        }
+                        rotateRight(xParent);
+                        calculatePositions(); draw(); await wait();
+                        x = state.root;
+                    }
+                }
+            }
+
+            // Se x è diventato rosso (o è la radice), basta colorarlo nero per risolvere il double-black
+            if (x) {
+                x.color = 'black';
+                logTerminal(`Nodo ${x.val} colorato nero → fixup completato`, 'success');
+            }
+        }
+
+        // =====================================================================
+
+        // === RBT ROTATIONS ===
         function rotateLeft(node) {
             let right = node.right;
             node.right = right.left;
-
             if (right.left) right.left.parent = node;
             right.parent = node.parent;
-
             if (!node.parent) state.root = right;
             else if (node === node.parent.left) node.parent.left = right;
             else node.parent.right = right;
-
             right.left = node;
             node.parent = right;
         }
@@ -1279,128 +1338,58 @@
         function rotateRight(node) {
             let left = node.left;
             node.left = left.right;
-
             if (left.right) left.right.parent = node;
             left.parent = node.parent;
-
             if (!node.parent) state.root = left;
             else if (node === node.parent.right) node.parent.right = left;
             else node.parent.left = left;
-
             left.right = node;
             node.parent = left;
         }
 
-        // === ANIMATED ROTATIONS ===
+        // === ANIMATED ROTATIONS (manual) ===
         async function animateRotateLeft(node) {
             if (!node || !node.right) return node;
-            
-            const title = `Rotazione sinistra su ${node.val}`;
-            startOperation(title);
-            logTerminal(`Inizio rotazione sinistra su ${node.val}`, 'info');
-            
-            // Highlight the pivot nodes
+            startOperation(`Rotazione sinistra su ${node.val}`);
             await highlight(node);
             await highlight(node.right);
-            
             const oldPositions = saveNodePositions();
             const right = node.right;
-            
-            // Step 1: Show node.right taking node's position
-            logTerminal(`Step 1: ${right.val} prende il posto di ${node.val}`, 'info');
             node.right = right.left;
-            if (right.left) {
-                logTerminal(`Il sottoalbero sinistro di ${right.val} diventa figlio destro di ${node.val}`, 'info');
-                right.left.parent = node;
-                await highlight(right.left);
-            }
-            
+            if (right.left) { right.left.parent = node; await highlight(right.left); }
             right.left = node;
-            logTerminal(`Step 2: ${node.val} diventa figlio sinistro di ${right.val}`, 'info');
-            
-            // Update parent pointers for RBT
-            if (state.type === 'rbt') {
-                right.parent = node.parent;
-                node.parent = right;
-                if (right.left) right.left.parent = node;
-            }
-            
-            // Update root if needed
-            if (!node.parent) {
-                state.root = right;
-                logTerminal(`${right.val} diventa la nuova radice`, 'success');
-            } else if (node === node.parent.left) {
-                node.parent.left = right;
-            } else {
-                node.parent.right = right;
-            }
-            
-            // Animate the transition
+            if (state.type === 'rbt') { right.parent = node.parent; node.parent = right; if (right.left) right.left.parent = node; }
+            if (!node.parent) { state.root = right; logTerminal(`${right.val} diventa la nuova radice`, 'success'); }
+            else if (node === node.parent.left) node.parent.left = right;
+            else node.parent.right = right;
             await animatePositionChange(oldPositions);
-            
-            calculatePositions();
-            draw();
-            logTerminal(`Rotazione sinistra completata su ${node.val}`, 'success');
+            calculatePositions(); draw();
+            logTerminal(`Rotazione sinistra completata`, 'success');
             showToast(`Rotazione sinistra completata`, 'success');
-            
             return right;
         }
 
         async function animateRotateRight(node) {
             if (!node || !node.left) return node;
-            
-            const title = `Rotazione destra su ${node.val}`;
-            startOperation(title);
-            logTerminal(`Inizio rotazione destra su ${node.val}`, 'info');
-            
-            // Highlight the pivot nodes
+            startOperation(`Rotazione destra su ${node.val}`);
             await highlight(node);
             await highlight(node.left);
-            
             const oldPositions = saveNodePositions();
             const left = node.left;
-            
-            // Step 1: Show node.left taking node's position
-            logTerminal(`Step 1: ${left.val} prende il posto di ${node.val}`, 'info');
             node.left = left.right;
-            if (left.right) {
-                logTerminal(`Il sottoalbero destro di ${left.val} diventa figlio sinistro di ${node.val}`, 'info');
-                left.right.parent = node;
-                await highlight(left.right);
-            }
-            
+            if (left.right) { left.right.parent = node; await highlight(left.right); }
             left.right = node;
-            logTerminal(`Step 2: ${node.val} diventa figlio destro di ${left.val}`, 'info');
-            
-            // Update parent pointers for RBT
-            if (state.type === 'rbt') {
-                left.parent = node.parent;
-                node.parent = left;
-                if (left.right) left.right.parent = node;
-            }
-            
-            // Update root if needed
-            if (!node.parent) {
-                state.root = left;
-                logTerminal(`${left.val} diventa la nuova radice`, 'success');
-            } else if (node === node.parent.left) {
-                node.parent.left = left;
-            } else {
-                node.parent.right = left;
-            }
-            
-            // Animate the transition
+            if (state.type === 'rbt') { left.parent = node.parent; node.parent = left; if (left.right) left.right.parent = node; }
+            if (!node.parent) { state.root = left; logTerminal(`${left.val} diventa la nuova radice`, 'success'); }
+            else if (node === node.parent.left) node.parent.left = left;
+            else node.parent.right = left;
             await animatePositionChange(oldPositions);
-            
-            calculatePositions();
-            draw();
-            logTerminal(`Rotazione destra completata su ${node.val}`, 'success');
+            calculatePositions(); draw();
+            logTerminal(`Rotazione destra completata`, 'success');
             showToast(`Rotazione destra completata`, 'success');
-            
             return left;
         }
 
-        // Helper function to save current node positions for animation
         function saveNodePositions() {
             const positions = new Map();
             function savePos(node) {
@@ -1413,46 +1402,25 @@
             return positions;
         }
 
-        // Animate nodes moving from old to new positions
         async function animatePositionChange(oldPositions) {
             const steps = 20;
             const duration = config.animSpeed * 0.8;
             const stepDelay = duration / steps;
-            
-            // Calculate new positions
             calculatePositions();
             const newPositions = saveNodePositions();
-            
-            // Reset to old positions for animation
-            oldPositions.forEach((pos, node) => {
-                node.x = pos.x;
-                node.y = pos.y;
-            });
-            
-            // Animate each step
+            oldPositions.forEach((pos, node) => { node.x = pos.x; node.y = pos.y; });
             for (let i = 0; i <= steps; i++) {
                 const progress = i / steps;
-                
                 oldPositions.forEach((oldPos, node) => {
                     const newPos = newPositions.get(node);
-                    if (newPos) {
-                        node.x = oldPos.x + (newPos.x - oldPos.x) * progress;
-                        node.y = oldPos.y + (newPos.y - oldPos.y) * progress;
-                    }
+                    if (newPos) { node.x = oldPos.x + (newPos.x - oldPos.x) * progress; node.y = oldPos.y + (newPos.y - oldPos.y) * progress; }
                 });
-                
                 draw();
                 await new Promise(resolve => setTimeout(resolve, stepDelay));
             }
-            
-            // Ensure final positions are exact
-            newPositions.forEach((pos, node) => {
-                node.x = pos.x;
-                node.y = pos.y;
-            });
+            newPositions.forEach((pos, node) => { node.x = pos.x; node.y = pos.y; });
         }
 
-        // === UPDATED MANUAL ROTATIONS WITH ANIMATION ===
         async function manualRotateLeft() {
             startOperation('Rotazione sinistra manuale');
             if (!state.selectedNode || !state.selectedNode.right) {
@@ -1460,22 +1428,11 @@
                 showToast('Seleziona un nodo con figlio destro', 'error');
                 return;
             }
-
-            // Store original node for re-selection
-            const originalNode = state.selectedNode;
-            
-            if (state.type === 'rbt') {
-                await animateRotateLeft(state.selectedNode);
-            } else {
-                // BST rotation with animation
-                await animateRotateLeftBST(state.selectedNode);
-            }
-            
-            // Try to re-select the new position of the original node
-            state.selectedNode = findNodeByValue(state.root, originalNode.val);
-            
-            calculatePositions();
-            draw();
+            const originalVal = state.selectedNode.val;
+            if (state.type === 'rbt') await animateRotateLeft(state.selectedNode);
+            else await animateRotateLeftBST(state.selectedNode);
+            state.selectedNode = findNodeByValue(state.root, originalVal);
+            calculatePositions(); draw();
         }
 
         async function manualRotateRight() {
@@ -1485,122 +1442,63 @@
                 showToast('Seleziona un nodo con figlio sinistro', 'error');
                 return;
             }
-
-            // Store original node for re-selection
-            const originalNode = state.selectedNode;
-            
-            if (state.type === 'rbt') {
-                await animateRotateRight(state.selectedNode);
-            } else {
-                // BST rotation with animation
-                await animateRotateRightBST(state.selectedNode);
-            }
-            
-            // Try to re-select the new position of the original node
-            state.selectedNode = findNodeByValue(state.root, originalNode.val);
-            
-            calculatePositions();
-            draw();
+            const originalVal = state.selectedNode.val;
+            if (state.type === 'rbt') await animateRotateRight(state.selectedNode);
+            else await animateRotateRightBST(state.selectedNode);
+            state.selectedNode = findNodeByValue(state.root, originalVal);
+            calculatePositions(); draw();
         }
 
-        // === ANIMATED BST ROTATIONS (without parent pointers) ===
         async function animateRotateLeftBST(node) {
             if (!node || !node.right) return node;
-            
-            logTerminal(`Inizio rotazione sinistra BST su ${node.val}`, 'info');
-            await highlight(node);
-            await highlight(node.right);
-            
+            logTerminal(`Rotazione sinistra BST su ${node.val}`, 'info');
+            await highlight(node); await highlight(node.right);
             const oldPositions = saveNodePositions();
             const right = node.right;
             const parent = findParent(state.root, node);
-            
-            // Step 1: Reassign right.left to node.right
             node.right = right.left;
-            if (right.left) {
-                logTerminal(`Sottoalbero sinistro di ${right.val} diventa figlio destro di ${node.val}`, 'info');
-                await highlight(right.left);
-            }
-            
-            // Step 2: Make node the left child of right
+            if (right.left) { logTerminal(`Sottoalbero sx di ${right.val} → figlio dx di ${node.val}`, 'info'); await highlight(right.left); }
             right.left = node;
-            logTerminal(`${node.val} diventa figlio sinistro di ${right.val}`, 'info');
-            
-            // Step 3: Update parent
-            if (!parent) {
-                state.root = right;
-                logTerminal(`${right.val} diventa nuova radice`, 'success');
-            } else if (parent.left === node) {
-                parent.left = right;
-            } else {
-                parent.right = right;
-            }
-            
+            if (!parent) { state.root = right; }
+            else if (parent.left === node) parent.left = right;
+            else parent.right = right;
             await animatePositionChange(oldPositions);
             return right;
         }
 
         async function animateRotateRightBST(node) {
             if (!node || !node.left) return node;
-            
-            logTerminal(`Inizio rotazione destra BST su ${node.val}`, 'info');
-            await highlight(node);
-            await highlight(node.left);
-            
+            logTerminal(`Rotazione destra BST su ${node.val}`, 'info');
+            await highlight(node); await highlight(node.left);
             const oldPositions = saveNodePositions();
             const left = node.left;
             const parent = findParent(state.root, node);
-            
-            // Step 1: Reassign left.right to node.left
             node.left = left.right;
-            if (left.right) {
-                logTerminal(`Sottoalbero destro di ${left.val} diventa figlio sinistro di ${node.val}`, 'info');
-                await highlight(left.right);
-            }
-            
-            // Step 2: Make node the right child of left
+            if (left.right) { logTerminal(`Sottoalbero dx di ${left.val} → figlio sx di ${node.val}`, 'info'); await highlight(left.right); }
             left.right = node;
-            logTerminal(`${node.val} diventa figlio destro di ${left.val}`, 'info');
-            
-            // Step 3: Update parent
-            if (!parent) {
-                state.root = left;
-                logTerminal(`${left.val} diventa nuova radice`, 'success');
-            } else if (parent.left === node) {
-                parent.left = left;
-            } else {
-                parent.right = left;
-            }
-            
+            if (!parent) { state.root = left; }
+            else if (parent.left === node) parent.left = left;
+            else parent.right = left;
             await animatePositionChange(oldPositions);
             return left;
         }
 
-        // Helper function to find node by value
         function findNodeByValue(root, val) {
             if (!root) return null;
             if (root.val === val) return root;
-            
-            const leftResult = findNodeByValue(root.left, val);
-            if (leftResult) return leftResult;
-            
-            return findNodeByValue(root.right, val);
+            return findNodeByValue(root.left, val) || findNodeByValue(root.right, val);
         }
 
         function findParent(root, node) {
             if (!root || root === node) return null;
             if (root.left === node || root.right === node) return root;
-
-            let leftResult = findParent(root.left, node);
-            if (leftResult) return leftResult;
-
-            return findParent(root.right, node);
+            return findParent(root.left, node) || findParent(root.right, node);
         }
 
         // === EVENT LISTENERS ===
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active')); 
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const theme = btn.dataset.theme;
                 if (theme === 'default') {
@@ -1608,14 +1506,7 @@
                     state.customColors.border = '#3b82f6';
                 } else {
                     document.body.setAttribute('data-theme', theme);
-                    // Aggiorna il colore del bordo in base al tema
-                    const themeColors = {
-                        'ocean': '#0ea5e9',
-                        'sunset': '#f97316',
-                        'forest': '#22c55e',
-                        'cyber': '#a855f7',
-                        'amber': '#f59e0b'
-                    };
+                    const themeColors = { 'ocean': '#0ea5e9', 'sunset': '#f97316', 'forest': '#22c55e', 'cyber': '#a855f7', 'amber': '#f59e0b' };
                     state.customColors.border = themeColors[theme] || '#3b82f6';
                 }
                 document.getElementById('colorBorder').value = state.customColors.border;
@@ -1633,65 +1524,32 @@
 
         document.getElementById('insertBtn').addEventListener('click', async () => {
             const val = parseInt(document.getElementById('nodeVal').value);
-            if (isNaN(val)) {
-                startOperation('Inserimento');
-                logTerminal('Valore non valido', 'error');
-                showToast('Inserisci un valore valido', 'error');
-                return;
-            }
-
-            if (state.type === 'rbt') {
-                insertRBT(val);
-            } else {
-                await insertBST(val);
-            }
-
+            if (isNaN(val)) { startOperation('Inserimento'); logTerminal('Valore non valido', 'error'); showToast('Inserisci un valore valido', 'error'); return; }
+            if (state.type === 'rbt') insertRBT(val);
+            else await insertBST(val);
             updateStats();
             document.getElementById('nodeVal').value = '';
         });
 
         document.getElementById('deleteBtn').addEventListener('click', async () => {
             const val = parseInt(document.getElementById('nodeVal').value);
-            if (isNaN(val)) {
-                startOperation('Eliminazione');
-                logTerminal('Valore non valido', 'error');
-                showToast('Inserisci un valore valido', 'error');
-                return;
-            }
-
-            if (state.type === 'rbt') {
-                startOperation(`Eliminazione ${val} (RBT)`);
-                logTerminal('Cancellazione RBT non implementata', 'warn');
-                showToast('Cancellazione RBT non implementata', 'info');
-            } else {
-                await deleteBST(val);
-            }
+            if (isNaN(val)) { startOperation('Eliminazione'); logTerminal('Valore non valido', 'error'); showToast('Inserisci un valore valido', 'error'); return; }
+            if (state.type === 'rbt') await deleteRBT(val);
+            else await deleteBST(val);
         });
 
         document.getElementById('searchBtn').addEventListener('click', async () => {
             const val = parseInt(document.getElementById('nodeVal').value);
-            if (isNaN(val)) {
-                startOperation('Ricerca');
-                logTerminal('Valore non valido', 'error');
-                showToast('Inserisci un valore valido', 'error');
-                return;
-            }
-
+            if (isNaN(val)) { startOperation('Ricerca'); logTerminal('Valore non valido', 'error'); showToast('Inserisci un valore valido', 'error'); return; }
             await searchBST(val);
         });
 
         document.getElementById('resetBtn').addEventListener('click', () => {
             startOperation('Reset albero');
-            state.root = null;
-            state.selectedNode = null;
-            state.visitedNodes.clear();
-            state.highlightNode = null;
-            updateStats();
-            draw();
-
-            document.getElementById('nodeVal').value = ''; // clear nodeVal input field
-            document.getElementById('bulkVal').value = ''; // clear bulkVal input field
-
+            state.root = null; state.selectedNode = null; state.visitedNodes.clear(); state.highlightNode = null;
+            updateStats(); draw();
+            document.getElementById('nodeVal').value = '';
+            document.getElementById('bulkVal').value = '';
             document.getElementById('traversalDisplay').textContent = '—';
             logTerminal('Struttura svuotata', 'success');
             showToast('Albero resettato', 'info');
@@ -1700,24 +1558,15 @@
         document.getElementById('bulkBtn').addEventListener('click', async () => {
             const input = document.getElementById('bulkVal').value;
             const arr = input.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
-
-            if (arr.length === 0) {
-                startOperation('Inserimento multiplo');
-                logTerminal('Nessun valore valido', 'error');
-                showToast('Inserisci valori separati da virgola', 'error');
-                return;
-            }
-
+            if (arr.length === 0) { startOperation('Inserimento multiplo'); logTerminal('Nessun valore valido', 'error'); showToast('Inserisci valori separati da virgola', 'error'); return; }
             startOperation(`Inserimento multiplo (${arr.length} valori)`);
             const oldSpeed = config.animSpeed;
             config.animSpeed = 50;
-
             for (let v of arr) {
                 logTerminal(`Inserisco ${v}`, 'info');
                 if (state.type === 'rbt') insertRBT(v, true);
                 else await insertBST(v, true);
             }
-
             config.animSpeed = oldSpeed;
             updateStats();
             document.getElementById('bulkVal').value = '';
@@ -1725,219 +1574,111 @@
         });
 
         document.getElementById('randomTreeBtn').addEventListener('click', async () => {
-            const randomLength = Math.floor(Math.random() * 16) + 5; // 5-20 nodi
+            const randomLength = Math.floor(Math.random() * 16) + 5;
             const arr = [];
             const usedValues = new Set();
             while (arr.length < randomLength) {
-                const val = Math.floor(Math.random() * 100) + 1; // 1-100
-                if (!usedValues.has(val)) {
-                    arr.push(val);
-                    usedValues.add(val);
-                }
+                const val = Math.floor(Math.random() * 100) + 1;
+                if (!usedValues.has(val)) { arr.push(val); usedValues.add(val); }
             }
-
-            // Ordina i valori per costruire un albero bilanciato
             arr.sort((a, b) => a - b);
-
             startOperation(`Generazione casuale bilanciata (${arr.length} nodi)`);
-            state.root = null;
-            state.visitedNodes.clear();
-
+            state.root = null; state.visitedNodes.clear();
             if (state.type === 'rbt') {
-                // Per RBT usa inserimento normale
-                const oldSpeed = config.animSpeed;
-                config.animSpeed = 50;
-                for (let v of arr) {
-                    logTerminal(`Inserisco ${v}`, 'info');
-                    insertRBT(v, true);
-                }
+                const oldSpeed = config.animSpeed; config.animSpeed = 50;
+                for (let v of arr) { logTerminal(`Inserisco ${v}`, 'info'); insertRBT(v, true); }
                 config.animSpeed = oldSpeed;
             } else {
-                // Per BST costruisci direttamente un albero bilanciato
                 state.root = buildBalancedBST(arr);
                 logTerminal(`Albero bilanciato creato con ${arr.length} nodi`, 'success');
             }
-
-            calculatePositions();
-            draw();
-            updateStats();
+            calculatePositions(); draw(); updateStats();
             showToast(`${arr.length} nodi casuali bilanciati`, 'success');
         });
 
         document.getElementById('inBtn').addEventListener('click', async () => {
-            if (!state.root) {
-                startOperation('In-Order');
-                logTerminal('Albero vuoto', 'error');
-                showToast('Albero vuoto', 'error');
-                return;
-            }
-            startOperation('In-Order');
-            state.visitedNodes.clear();
+            if (!state.root) { startOperation('In-Order'); logTerminal('Albero vuoto', 'error'); showToast('Albero vuoto', 'error'); return; }
+            startOperation('In-Order'); state.visitedNodes.clear();
             const result = await inOrderTraversal(state.root);
             document.getElementById('traversalDisplay').textContent = result.join(', ');
-            state.highlightNode = null;
-            draw();
-            showToast('In-Order completato', 'success');
+            state.highlightNode = null; draw(); showToast('In-Order completato', 'success');
         });
 
         document.getElementById('preBtn').addEventListener('click', async () => {
-            if (!state.root) {
-                startOperation('Pre-Order');
-                logTerminal('Albero vuoto', 'error');
-                showToast('Albero vuoto', 'error');
-                return;
-            }
-            startOperation('Pre-Order');
-            state.visitedNodes.clear();
+            if (!state.root) { startOperation('Pre-Order'); logTerminal('Albero vuoto', 'error'); showToast('Albero vuoto', 'error'); return; }
+            startOperation('Pre-Order'); state.visitedNodes.clear();
             const result = await preOrderTraversal(state.root);
             document.getElementById('traversalDisplay').textContent = result.join(', ');
-            state.highlightNode = null;
-            draw();
-            showToast('Pre-Order completato', 'success');
+            state.highlightNode = null; draw(); showToast('Pre-Order completato', 'success');
         });
 
         document.getElementById('postBtn').addEventListener('click', async () => {
-            if (!state.root) {
-                startOperation('Post-Order');
-                logTerminal('Albero vuoto', 'error');
-                showToast('Albero vuoto', 'error');
-                return;
-            }
-            startOperation('Post-Order');
-            state.visitedNodes.clear();
+            if (!state.root) { startOperation('Post-Order'); logTerminal('Albero vuoto', 'error'); showToast('Albero vuoto', 'error'); return; }
+            startOperation('Post-Order'); state.visitedNodes.clear();
             const result = await postOrderTraversal(state.root);
             document.getElementById('traversalDisplay').textContent = result.join(', ');
-            state.highlightNode = null;
-            draw();
-            showToast('Post-Order completato', 'success');
+            state.highlightNode = null; draw(); showToast('Post-Order completato', 'success');
         });
 
         document.getElementById('minBtn').addEventListener('click', animateFindMin);
         document.getElementById('maxBtn').addEventListener('click', animateFindMax);
 
         document.getElementById('succBtn').addEventListener('click', () => {
-            if (!state.selectedNode) {
-                startOperation('Successore');
-                logTerminal('Seleziona prima un nodo', 'error');
-                showToast('Seleziona prima un nodo', 'error');
-                return;
-            }
-
+            if (!state.selectedNode) { startOperation('Successore'); logTerminal('Seleziona prima un nodo', 'error'); showToast('Seleziona prima un nodo', 'error'); return; }
             startOperation(`Successore di ${state.selectedNode.val}`);
             const succ = getSuccessor(state.root, state.selectedNode);
-            if (succ) {
-                state.visitedNodes.clear();
-                state.visitedNodes.add(succ);
-                state.selectedNode = succ;
-                draw();
-                logTerminal(`Successore trovato: ${succ.val}`, 'success');
-                showToast(`Successore: ${succ.val}`, 'success');
-            } else {
-                logTerminal('Nessun successore', 'warn');
-                showToast('Nessun successore', 'info');
-            }
+            if (succ) { state.visitedNodes.clear(); state.visitedNodes.add(succ); state.selectedNode = succ; draw(); logTerminal(`Successore: ${succ.val}`, 'success'); showToast(`Successore: ${succ.val}`, 'success'); }
+            else { logTerminal('Nessun successore', 'warn'); showToast('Nessun successore', 'info'); }
         });
 
         document.getElementById('predBtn').addEventListener('click', () => {
-            if (!state.selectedNode) {
-                startOperation('Predecessore');
-                logTerminal('Seleziona prima un nodo', 'error');
-                showToast('Seleziona prima un nodo', 'error');
-                return;
-            }
-
+            if (!state.selectedNode) { startOperation('Predecessore'); logTerminal('Seleziona prima un nodo', 'error'); showToast('Seleziona prima un nodo', 'error'); return; }
             startOperation(`Predecessore di ${state.selectedNode.val}`);
             const pred = getPredecessor(state.root, state.selectedNode);
-            if (pred) {
-                state.visitedNodes.clear();
-                state.visitedNodes.add(pred);
-                state.selectedNode = pred;
-                draw();
-                logTerminal(`Predecessore trovato: ${pred.val}`, 'success');
-                showToast(`Predecessore: ${pred.val}`, 'success');
-            } else {
-                logTerminal('Nessun predecessore', 'warn');
-                showToast('Nessun predecessore', 'info');
-            }
+            if (pred) { state.visitedNodes.clear(); state.visitedNodes.add(pred); state.selectedNode = pred; draw(); logTerminal(`Predecessore: ${pred.val}`, 'success'); showToast(`Predecessore: ${pred.val}`, 'success'); }
+            else { logTerminal('Nessun predecessore', 'warn'); showToast('Nessun predecessore', 'info'); }
         });
 
         document.getElementById('rotLeftBtn').addEventListener('click', manualRotateLeft);
         document.getElementById('rotRightBtn').addEventListener('click', manualRotateRight);
 
         document.getElementById('speedSlider').addEventListener('input', (e) => {
-            const speed = parseInt(e.target.value);
-            config.animSpeed = 1000 - (speed * 9);
+            config.animSpeed = 1000 - (parseInt(e.target.value) * 9);
         });
 
-        document.getElementById('colorBorder').addEventListener('change', (e) => {
-            state.customColors.border = e.target.value;
-            draw();
-        });
+        document.getElementById('colorBorder').addEventListener('change', (e) => { state.customColors.border = e.target.value; draw(); });
+        document.getElementById('colorRed').addEventListener('change', (e) => { state.customColors.red = e.target.value; draw(); });
 
-        document.getElementById('colorRed').addEventListener('change', (e) => {
-            state.customColors.red = e.target.value;
-            draw();
-        });
-
-        // Click su canvas per selezionare nodo
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left - canvas.width / 2 - state.offsetX;
             const y = e.clientY - rect.top - state.offsetY - 20;
-
             state.selectedNode = findNodeAtPosition(state.root, x, y);
-            if (state.selectedNode) {
-                startOperation('Selezione nodo');
-                logTerminal(`Nodo selezionato: ${state.selectedNode.val}`, 'info');
-                showToast(`Nodo ${state.selectedNode.val} selezionato`, 'info');
-            }
+            if (state.selectedNode) { startOperation('Selezione nodo'); logTerminal(`Nodo selezionato: ${state.selectedNode.val}`, 'info'); showToast(`Nodo ${state.selectedNode.val} selezionato`, 'info'); }
             draw();
         });
 
         function findNodeAtPosition(node, x, y) {
             if (!node) return null;
-
             const dist = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
             if (dist <= config.nodeRadius) return node;
-
-            const leftResult = findNodeAtPosition(node.left, x, y);
-            if (leftResult) return leftResult;
-
-            return findNodeAtPosition(node.right, x, y);
+            return findNodeAtPosition(node.left, x, y) || findNodeAtPosition(node.right, x, y);
         }
 
-        // Pan/Drag
-        container.addEventListener('mousedown', (e) => {
-            state.isDragging = true;
-            state.lastX = e.clientX;
-            state.lastY = e.clientY;
-        });
-
-        window.addEventListener('mouseup', () => {
-            state.isDragging = false;
-        });
-
+        container.addEventListener('mousedown', (e) => { state.isDragging = true; state.lastX = e.clientX; state.lastY = e.clientY; });
+        window.addEventListener('mouseup', () => { state.isDragging = false; });
         window.addEventListener('mousemove', (e) => {
             if (!state.isDragging) return;
-            state.offsetX += e.clientX - state.lastX;
-            state.offsetY += e.clientY - state.lastY;
-            state.lastX = e.clientX;
-            state.lastY = e.clientY;
+            state.offsetX += e.clientX - state.lastX; state.offsetY += e.clientY - state.lastY;
+            state.lastX = e.clientX; state.lastY = e.clientY;
             draw();
         });
 
-        // Zoom with mouse wheel
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
-            const zoomSpeed = 0.1;
             const direction = e.deltaY > 0 ? -1 : 1;
-            const newZoom = state.zoom + (direction * zoomSpeed);
-            
-            // Limita lo zoom tra 0.2 e 3
-            if (newZoom >= 0.2 && newZoom <= 3) {
-                state.zoom = newZoom;
-                draw();
-            }
+            const newZoom = state.zoom + (direction * 0.1);
+            if (newZoom >= 0.2 && newZoom <= 3) { state.zoom = newZoom; draw(); }
         }, { passive: false });
 
         window.addEventListener('resize', draw);
