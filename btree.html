@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treelizer - B-Tree</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --accent: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+            --node-bg: rgba(30, 41, 59, 0.9);
+            --node-border: #3b82f6;
+        }
+
+        [data-theme="ocean"]  { --bg-dark: #0a1628; --primary: #0ea5e9; --accent: #06b6d4; --success: #14b8a6; --node-border: #0ea5e9; }
+        [data-theme="sunset"] { --bg-dark: #1a0f1e; --primary: #f97316; --accent: #ec4899; --success: #a855f7; --node-border: #f97316; }
+        [data-theme="forest"] { --bg-dark: #0f1a14; --primary: #22c55e; --accent: #84cc16; --success: #10b981; --node-border: #22c55e; }
+        [data-theme="cyber"]  { --bg-dark: #0d0d1a; --primary: #a855f7; --accent: #ec4899; --success: #06b6d4; --node-border: #a855f7; }
+        [data-theme="amber"]  { --bg-dark: #1a1410; --primary: #f59e0b; --accent: #eab308; --success: #84cc16; --node-border: #f59e0b; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(59,130,246,.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6,182,212,.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            transition: background-color .3s;
+        }
+
+        .container { width: 100%; display: flex; height: 100vh; }
+
+        aside {
+            width: 300px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+            overflow-y: auto;
+            z-index: 10;
+            gap: 0;
+        }
+
+        h1 {
+            font-size: 1.4rem; font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 4px; text-align: center;
+        }
+        .subtitle { font-size: .8rem; color: var(--text-muted); margin-bottom: 20px; text-align: center; }
+
+        .control-group { margin-bottom: 20px; }
+        .group-title {
+            font-size: .7rem; text-transform: uppercase; letter-spacing: .1em;
+            color: var(--text-muted); margin-bottom: 10px; font-weight: 600;
+        }
+
+        .theme-selector { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-bottom: 10px; }
+        .theme-btn {
+            padding: 7px; background: rgba(255,255,255,.05); border: 1px solid var(--border);
+            border-radius: 6px; cursor: pointer; font-size: .68rem; color: var(--text-muted);
+            transition: all .2s; font-weight: 500; text-transform: uppercase; font-family: 'Inter', sans-serif;
+        }
+        .theme-btn:hover { background: rgba(255,255,255,.1); }
+        .theme-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        input[type="number"], input[type="text"] {
+            width: 100%; background: rgba(0,0,0,.2); border: 1px solid var(--border);
+            padding: 9px; border-radius: 8px; color: white;
+            font-family: 'JetBrains Mono', monospace; margin-bottom: 7px; transition: .2s;
+            font-size: .9rem;
+        }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+
+        select {
+            width: 100%; background: rgba(0,0,0,.3); border: 1px solid var(--border);
+            padding: 9px; border-radius: 8px; color: white; font-family: 'Inter', sans-serif;
+            font-size: .85rem; margin-bottom: 7px; cursor: pointer; transition: .2s;
+            -webkit-appearance: none;
+        }
+        select:focus { outline: none; border-color: var(--primary); }
+        select option { background: #1e293b; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+
+        button {
+            padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
+            background: rgba(255,255,255,.05); color: var(--text-main); cursor: pointer;
+            font-size: .82rem; font-weight: 500; transition: all .2s; font-family: 'Inter', sans-serif;
+        }
+        button:hover { background: rgba(255,255,255,.1); transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); color: white; }
+        .btn-primary:hover { background: #2563eb; box-shadow: 0 4px 12px var(--primary-glow); }
+        .btn-danger { color: var(--danger); border-color: rgba(239,68,68,.3); }
+        .btn-danger:hover { background: rgba(239,68,68,.1); }
+        .btn-full { grid-column: 1 / -1; }
+
+        .slider-wrapper { display: flex; align-items: center; gap: 10px; font-size: .8rem; color: var(--text-muted); }
+        input[type="range"] { flex: 1; accent-color: var(--primary); cursor: pointer; }
+
+        .terminal-panel {
+            background: rgba(0,0,0,.25); border: 1px solid var(--border); border-radius: 12px;
+            padding: 10px; font-family: 'JetBrains Mono', monospace; font-size: .72rem;
+            color: var(--text-main); max-height: 160px; overflow-y: auto; line-height: 1.5;
+        }
+        .terminal-line { margin-bottom: 4px; color: var(--text-muted); }
+        .terminal-line.success { color: var(--success); }
+        .terminal-line.error { color: var(--danger); }
+        .terminal-line.warn { color: var(--warning); }
+
+        .stats-panel {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+            background: rgba(0,0,0,.2); padding: 12px; border-radius: 12px; margin-top: auto;
+        }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-label { font-size: .68rem; color: var(--text-muted); }
+        .stat-value { font-size: 1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+
+        .back-link {
+            display: inline-block; margin-bottom: 13px; padding: 7px 11px;
+            background: rgba(255,255,255,.05); border: 1px solid var(--border);
+            border-radius: 6px; color: var(--primary); text-decoration: none;
+            font-size: .82rem; transition: all .2s;
+        }
+        .back-link:hover { background: rgba(255,255,255,.1); }
+
+        main {
+            flex: 1; position: relative;
+            background-image:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            overflow: hidden; cursor: grab;
+        }
+        main:active { cursor: grabbing; }
+        #btCanvas { display: block; }
+
+        .toast {
+            position: absolute; bottom: 28px; right: 28px; padding: 11px 18px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-left: 4px solid var(--primary); border-radius: 8px;
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,.3);
+            transform: translateY(100px); opacity: 0;
+            transition: all .4s cubic-bezier(.175,.885,.32,1.275);
+            z-index: 100; pointer-events: none; font-size: .88rem;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+
+        /* Inline key editor overlay */
+        #keyEditor {
+            position: absolute;
+            display: none;
+            background: #1e293b;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            padding: 4px 6px;
+            z-index: 200;
+            box-shadow: 0 4px 20px rgba(0,0,0,.5);
+        }
+        #keyEditor input {
+            width: 56px; margin: 0; padding: 4px 6px;
+            background: rgba(0,0,0,.3); border: 1px solid var(--border);
+            border-radius: 4px; color: white; font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem; text-align: center;
+        }
+        #keyEditor input:focus { outline: none; border-color: var(--primary); }
+
+        .legend-info {
+            position: absolute; top: 16px; right: 16px;
+            background: var(--bg-panel); padding: 10px 14px;
+            border-radius: 8px; border: 1px solid var(--border);
+            font-size: .72rem; pointer-events: none; backdrop-filter: blur(12px);
+            display: flex; flex-direction: column; gap: 5px; color: var(--text-muted);
+        }
+        .legend-row { display: flex; align-items: center; gap: 7px; }
+        .legend-sq {
+            width: 16px; height: 16px; border-radius: 3px; border: 2px solid;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <aside>
+        <a href="treelizer.html" class="back-link">← Treelizer</a>
+        <h1>🌲 B-Tree</h1>
+        <p class="subtitle">Cormen — Preemptive Split</p>
+
+        <div class="control-group">
+            <div class="group-title">Tema</div>
+            <div class="theme-selector">
+                <button class="theme-btn active" data-theme="default">Blu</button>
+                <button class="theme-btn" data-theme="ocean">Oceano</button>
+                <button class="theme-btn" data-theme="sunset">Tramonto</button>
+                <button class="theme-btn" data-theme="forest">Foresta</button>
+                <button class="theme-btn" data-theme="cyber">Cyber</button>
+                <button class="theme-btn" data-theme="amber">Ambra</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="group-title">Grado minimo t</div>
+            <select id="tSelect">
+                <option value="2">t = 2  (nodi da 1 a 3 chiavi)</option>
+                <option value="3">t = 3  (nodi da 2 a 5 chiavi)</option>
+            </select>
+            <button id="resetBtn" class="btn-danger btn-full" style="margin-top:2px">Reset albero</button>
+        </div>
+
+        <div class="control-group">
+            <div class="group-title">Operazioni</div>
+            <input type="number" id="keyVal" placeholder="Chiave intera">
+            <div class="btn-grid">
+                <button class="btn-primary" id="insertBtn">Inserisci</button>
+                <button id="searchBtn">Cerca</button>
+                <button id="deleteBtn">Elimina</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="group-title">Inserimento multiplo</div>
+            <input type="text" id="bulkVal" placeholder="10, 20, 5, 30...">
+            <div class="btn-grid">
+                <button class="btn-primary btn-full" id="bulkBtn">Genera albero</button>
+                <button class="btn-primary btn-full" id="randomBtn">Casuale</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="group-title">Velocità animazione</div>
+            <div class="slider-wrapper">
+                <span>Lenta</span>
+                <input type="range" id="speedSlider" min="10" max="100" value="50">
+                <span>Veloce</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="group-title">Terminal</div>
+            <div class="terminal-panel" id="termLog">
+                <div class="terminal-line">Pronto. Clicca su una chiave per modificarla.</div>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-item">
+                <span class="stat-label">Chiavi</span>
+                <span class="stat-value" id="keysDisplay">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Altezza</span>
+                <span class="stat-value" id="heightDisplay">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Nodi</span>
+                <span class="stat-value" id="nodesDisplay">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">t corrente</span>
+                <span class="stat-value" id="tDisplay">2</span>
+            </div>
+        </div>
+    </aside>
+
+    <main id="canvasContainer">
+        <canvas id="btCanvas"></canvas>
+        <div class="toast" id="toast">Pronto.</div>
+        <div id="keyEditor"><input id="keyInput" type="number"></div>
+        <div class="legend-info">
+            <div class="legend-row">
+                <div class="legend-sq" style="background:rgba(30,41,59,.9); border-color:var(--primary)"></div>
+                <span>Nodo normale</span>
+            </div>
+            <div class="legend-row">
+                <div class="legend-sq" style="background:rgba(251,191,36,.25); border-color:#fbbf24"></div>
+                <span>Corrente / evidenziato</span>
+            </div>
+            <div class="legend-row">
+                <div class="legend-sq" style="background:rgba(16,185,129,.25); border-color:#10b981"></div>
+                <span>Trovato</span>
+            </div>
+            <div class="legend-row">
+                <div class="legend-sq" style="background:rgba(239,68,68,.25); border-color:#ef4444"></div>
+                <span>Split</span>
+            </div>
+            <div style="margin-top:4px; font-style:italic">Doppio-click su una chiave per modificarla</div>
+        </div>
+    </main>
+</div>
+
+<script>
+// ============================================================
+//  B-TREE — Cormen, preemptive split on insert
+//  Max degree t = 2 or 3 (selectable)
+//  Canvas-based, square node cells, editable keys
+// ============================================================
+
+const canvas  = document.getElementById('btCanvas');
+const ctx     = canvas.getContext('2d');
+const cont    = document.getElementById('canvasContainer');
+const toastEl = document.getElementById('toast');
+const termLog = document.getElementById('termLog');
+
+// ---- Layout constants ----
+const CELL_W  = 38;   // width of each key cell in pixels
+const CELL_H  = 36;   // height of key cell
+const V_GAP   = 70;   // vertical gap between levels
+const H_PAD   = 16;   // extra padding on each side of a node beyond keys
+
+// ---- State ----
+let T = 2;  // min degree
+let animSpeed = 400;
+
+let btRoot = null;
+
+let offset = { x: 0, y: 0 };
+let zoom   = 1;
+let isDragging = false;
+let lastMouse  = { x: 0, y: 0 };
+
+// highlight state
+let hlNode  = null;   // node to highlight (yellow)
+let hlColor = 'yellow'; // 'yellow' | 'green' | 'red'
+let hlKeyIdx = -1;    // key index within hlNode (-1 = whole node)
+
+// ============================================================
+//  B-TREE NODE
+// ============================================================
+class BNode {
+    constructor() {
+        this.keys     = [];       // sorted array of integers
+        this.children = [];       // array of BNode (length = keys.length + 1 for internal)
+        this.leaf     = true;
+        // layout
+        this.x = 0;
+        this.y = 0;
+        this.w = 0;   // computed width
+    }
+    isLeaf() { return this.leaf; }
+    isFull() { return this.keys.length === 2 * T - 1; }
+}
+
+// ============================================================
+//  UTILITY
+// ============================================================
+function wait() {
+    return new Promise(r => setTimeout(r, animSpeed));
+}
+
+function showToast(msg, type = 'info') {
+    toastEl.textContent = msg;
+    toastEl.className   = `toast ${type} show`;
+    setTimeout(() => toastEl.classList.remove('show'), 3000);
+}
+
+function clearLog() { termLog.innerHTML = ''; }
+
+function log(msg, type = 'info') {
+    const d = document.createElement('div');
+    d.className = `terminal-line ${type}`.trim();
+    d.textContent = msg;
+    termLog.appendChild(d);
+    termLog.scrollTop = termLog.scrollHeight;
+}
+
+function startOp(title) { clearLog(); log(title, 'info'); }
+
+async function flashNode(node, color = 'yellow', keyIdx = -1) {
+    hlNode   = node;
+    hlColor  = color;
+    hlKeyIdx = keyIdx;
+    drawAll();
+    await wait();
+}
+
+function clearHighlight() {
+    hlNode = null; hlKeyIdx = -1;
+    drawAll();
+}
+
+// ---- stats ----
+function countKeys(node) {
+    if (!node) return 0;
+    let c = node.keys.length;
+    if (!node.leaf) for (const ch of node.children) c += countKeys(ch);
+    return c;
+}
+function countNodes(node) {
+    if (!node) return 0;
+    let c = 1;
+    if (!node.leaf) for (const ch of node.children) c += countNodes(ch);
+    return c;
+}
+function treeHeight(node) {
+    if (!node) return 0;
+    if (node.leaf) return 1;
+    return 1 + treeHeight(node.children[0]);
+}
+function updateStats() {
+    document.getElementById('keysDisplay').textContent  = countKeys(btRoot);
+    document.getElementById('heightDisplay').textContent = treeHeight(btRoot);
+    document.getElementById('nodesDisplay').textContent  = countNodes(btRoot);
+    document.getElementById('tDisplay').textContent      = T;
+}
+
+// ============================================================
+//  LAYOUT — assign x,y to every node
+// ============================================================
+function nodeWidth(node) {
+    return node.keys.length * CELL_W + H_PAD * 2;
+}
+
+// Compute the total "span" needed by a subtree (in canvas units).
+// We do a post-order pass: each leaf takes nodeWidth; each internal node
+// takes max(own width, sum of children widths + gaps).
+const H_GAP = 22; // horizontal gap between sibling nodes
+
+function computeLayout(node) {
+    if (!node) return 0;
+    node.w = nodeWidth(node);
+    if (node.leaf) {
+        return node.w;
+    }
+    let childrenSpan = 0;
+    for (let i = 0; i < node.children.length; i++) {
+        const cs = computeLayout(node.children[i]);
+        childrenSpan += cs;
+        if (i < node.children.length - 1) childrenSpan += H_GAP;
+    }
+    node.span = Math.max(node.w, childrenSpan);
+    return node.span;
+}
+
+function assignPositions(node, cx, y) {
+    if (!node) return;
+    node.x = cx - node.w / 2;
+    node.y = y;
+
+    if (node.leaf) return;
+
+    // distribute children
+    const n = node.children.length;
+    // compute total children span
+    let totalSpan = 0;
+    for (let i = 0; i < n; i++) {
+        totalSpan += (node.children[i].span || node.children[i].w);
+        if (i < n - 1) totalSpan += H_GAP;
+    }
+
+    const startX = cx - totalSpan / 2;
+    let curX = startX;
+    for (let i = 0; i < n; i++) {
+        const cs = node.children[i].span || node.children[i].w;
+        assignPositions(node.children[i], curX + cs / 2, y + CELL_H + V_GAP);
+        curX += cs + H_GAP;
+    }
+}
+
+function layoutTree() {
+    if (!btRoot) return;
+    computeLayout(btRoot);
+    assignPositions(btRoot, 0, 40);
+}
+
+// ============================================================
+//  RENDERING
+// ============================================================
+function drawAll() {
+    canvas.width  = cont.clientWidth;
+    canvas.height = cont.clientHeight;
+
+    // background
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark').trim() || '#0f172a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (!btRoot) { updateStats(); return; }
+
+    ctx.save();
+    ctx.translate(canvas.width / 2 + offset.x, offset.y + 30);
+    ctx.scale(zoom, zoom);
+
+    drawEdges(btRoot);
+    drawNodes(btRoot);
+
+    ctx.restore();
+    updateStats();
+}
+
+function drawEdges(node) {
+    if (!node || node.leaf) return;
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
+
+    for (let i = 0; i < node.children.length; i++) {
+        const child = node.children[i];
+        // parent attachment point: between key i-1 and key i (or edges)
+        const srcX = node.x + (i < node.keys.length ? H_PAD + i * CELL_W + CELL_W / 2 : node.w - H_PAD);
+        // actually use the child's separator: bottom center of cell gap
+        const parentCX = node.x + slotX(node, i);
+        const parentCY = node.y + CELL_H;
+        const childCX  = child.x + child.w / 2;
+        const childCY  = child.y;
+
+        ctx.beginPath();
+        ctx.moveTo(parentCX, parentCY);
+        // cubic bezier for nice curves
+        ctx.bezierCurveTo(parentCX, parentCY + V_GAP * 0.45, childCX, childCY - V_GAP * 0.45, childCX, childCY);
+        ctx.strokeStyle = 'rgba(148,163,184,0.35)';
+        ctx.lineWidth   = 1.5;
+        ctx.stroke();
+
+        drawEdges(child);
+    }
+}
+
+// X coordinate of the i-th child slot center (relative to node.x)
+function slotX(node, i) {
+    if (i === 0) return H_PAD / 2 + 2;
+    if (i === node.keys.length) return node.w - H_PAD / 2 - 2;
+    return H_PAD + i * CELL_W;
+}
+
+function drawNodes(node) {
+    if (!node) return;
+    if (!node.leaf) for (const ch of node.children) drawNodes(ch);
+
+    const x = node.x;
+    const y = node.y;
+    const w = node.w;
+    const h = CELL_H;
+    const r = 5; // corner radius
+
+    const isHl = (node === hlNode);
+
+    // Node background + border
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
+
+    // outer rect
+    roundRect(ctx, x, y, w, h, r);
+    ctx.fillStyle   = isHl && hlKeyIdx === -1 ? colorForHl(hlColor, 0.25) : 'rgba(15,23,42,0.85)';
+    ctx.fill();
+    ctx.strokeStyle = isHl && hlKeyIdx === -1 ? strokeForHl(hlColor) : primaryColor;
+    ctx.lineWidth   = isHl && hlKeyIdx === -1 ? 2.5 : 1.8;
+    ctx.stroke();
+
+    // draw each key cell
+    for (let i = 0; i < node.keys.length; i++) {
+        const kx = x + H_PAD + i * CELL_W;
+        const ky = y;
+        const isKeyHl = isHl && hlKeyIdx === i;
+
+        // cell fill
+        ctx.fillStyle = isKeyHl ? colorForHl(hlColor, 0.35) : 'rgba(30,41,59,0.0)';
+        ctx.fillRect(kx, ky + 2, CELL_W, h - 4);
+
+        // cell border (dividers between keys)
+        if (i > 0) {
+            ctx.beginPath();
+            ctx.moveTo(kx, ky + 4);
+            ctx.lineTo(kx, ky + h - 4);
+            ctx.strokeStyle = isKeyHl ? strokeForHl(hlColor) : 'rgba(148,163,184,0.2)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        // key text
+        ctx.fillStyle   = isKeyHl ? '#ffffff' : '#f1f5f9';
+        ctx.font        = 'bold 14px "JetBrains Mono", monospace';
+        ctx.textAlign   = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(node.keys[i]), kx + CELL_W / 2, ky + h / 2);
+    }
+}
+
+function colorForHl(c, alpha) {
+    if (c === 'yellow') return `rgba(251,191,36,${alpha})`;
+    if (c === 'green')  return `rgba(16,185,129,${alpha})`;
+    if (c === 'red')    return `rgba(239,68,68,${alpha})`;
+    return `rgba(59,130,246,${alpha})`;
+}
+function strokeForHl(c) {
+    if (c === 'yellow') return '#fbbf24';
+    if (c === 'green')  return '#10b981';
+    if (c === 'red')    return '#ef4444';
+    return '#3b82f6';
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
+
+// ============================================================
+//  B-TREE ALGORITHMS — Cormen (CLRS 3rd ed.)
+// ============================================================
+
+// ---- Split child ----
+// Splits the i-th child of `parent` (which must be full).
+// Called during preemptive-split insert.
+async function btSplitChild(parent, i, animate = true) {
+    const y = parent.children[i];      // full child to split
+    const z = new BNode();             // new right sibling
+    z.leaf = y.leaf;
+
+    const mid = T - 1;  // index of median key in y
+
+    // z gets the upper T-1 keys of y
+    z.keys     = y.keys.splice(mid + 1);
+    if (!y.leaf) z.children = y.children.splice(mid + 1);
+
+    const medianKey = y.keys.splice(mid)[0];  // pop median
+
+    // Insert median into parent
+    parent.keys.splice(i, 0, medianKey);
+    parent.children.splice(i + 1, 0, z);
+
+    if (animate) {
+        log(`Split: chiave mediana ${medianKey} sale al padre`, 'warn');
+        hlNode = parent; hlColor = 'red'; hlKeyIdx = i;
+        layoutTree(); drawAll();
+        await wait();
+        hlNode = null; hlKeyIdx = -1;
+    }
+}
+
+// ---- Insert (preemptive split) ----
+async function btInsert(k, animate = true) {
+    if (!btRoot) {
+        btRoot = new BNode();
+        btRoot.keys = [k];
+        log(`Albero vuoto: ${k} diventa radice`, 'success');
+        layoutTree(); drawAll(); updateStats();
+        return;
+    }
+
+    // If root is full, split it first (standard Cormen preemptive)
+    if (btRoot.isFull()) {
+        const oldRoot = btRoot;
+        btRoot = new BNode();
+        btRoot.leaf = false;
+        btRoot.children = [oldRoot];
+        await btSplitChild(btRoot, 0, animate);
+        log(`Radice piena — split della radice`, 'warn');
+    }
+
+    await btInsertNonFull(btRoot, k, animate);
+}
+
+async function btInsertNonFull(node, k, animate) {
+    if (animate) {
+        await flashNode(node, 'yellow');
+    }
+
+    let i = node.keys.length - 1;
+
+    if (node.leaf) {
+        // Find correct position and insert
+        while (i >= 0 && k < node.keys[i]) i--;
+        if (node.keys[i] === k) {
+            log(`Chiave ${k} già presente`, 'error');
+            showToast(`Chiave ${k} già presente`, 'error');
+            clearHighlight();
+            return;
+        }
+        node.keys.splice(i + 1, 0, k);
+        log(`Inserita chiave ${k} in foglia`, 'success');
+        if (animate) {
+            hlNode = node; hlColor = 'green'; hlKeyIdx = i + 1;
+            layoutTree(); drawAll(); await wait();
+            hlNode = null; hlKeyIdx = -1;
+        }
+        layoutTree(); drawAll();
+    } else {
+        // Find child to descend into
+        while (i >= 0 && k < node.keys[i]) i--;
+        i++;
+        const childIdx = i;
+
+        if (animate) {
+            log(`Scendo nel figlio ${childIdx} (chiave ${k})`, 'info');
+        }
+
+        // Preemptive split: if chosen child is full, split before descending
+        if (node.children[childIdx].isFull()) {
+            log(`Figlio ${childIdx} pieno — split preventivo`, 'warn');
+            await btSplitChild(node, childIdx, animate);
+            layoutTree(); drawAll();
+            // After split, decide which of the two new children to descend
+            if (k > node.keys[childIdx]) {
+                await btInsertNonFull(node.children[childIdx + 1], k, animate);
+            } else if (k === node.keys[childIdx]) {
+                log(`Chiave ${k} già presente`, 'error');
+                showToast(`Chiave ${k} già presente`, 'error');
+                clearHighlight();
+            } else {
+                await btInsertNonFull(node.children[childIdx], k, animate);
+            }
+        } else {
+            await btInsertNonFull(node.children[childIdx], k, animate);
+        }
+    }
+}
+
+// ---- Search ----
+async function btSearch(node, k, animate = true) {
+    if (!node) return null;
+    if (animate) await flashNode(node, 'yellow');
+
+    let i = 0;
+    while (i < node.keys.length && k > node.keys[i]) i++;
+
+    if (i < node.keys.length && k === node.keys[i]) {
+        log(`Trovata chiave ${k}`, 'success');
+        if (animate) {
+            hlNode = node; hlColor = 'green'; hlKeyIdx = i;
+            layoutTree(); drawAll(); await wait();
+        }
+        return { node, index: i };
+    }
+
+    if (node.leaf) {
+        log(`Chiave ${k} non trovata`, 'error');
+        return null;
+    }
+
+    log(`Scendo nel figlio ${i}`, 'info');
+    return btSearch(node.children[i], k, animate);
+}
+
+// ---- Delete (Cormen full algorithm) ----
+// Implements all 3 cases from CLRS.
+
+async function btDelete(k) {
+    if (!btRoot) { log('Albero vuoto', 'error'); showToast('Albero vuoto', 'error'); return; }
+    await btDeleteKey(btRoot, k);
+    // If root has no keys and has one child, shrink tree
+    if (btRoot.keys.length === 0 && !btRoot.leaf) {
+        btRoot = btRoot.children[0];
+        log('Radice svuotata — albero si accorcia', 'warn');
+    }
+    layoutTree(); drawAll(); updateStats();
+}
+
+async function btDeleteKey(node, k) {
+    await flashNode(node, 'yellow');
+    let i = 0;
+    while (i < node.keys.length && k > node.keys[i]) i++;
+
+    if (i < node.keys.length && k === node.keys[i]) {
+        // key found in this node
+        if (node.leaf) {
+            // Case 1: simply remove
+            node.keys.splice(i, 1);
+            log(`Caso 1: eliminata chiave ${k} dalla foglia`, 'success');
+            hlNode = node; hlColor = 'red'; hlKeyIdx = -1;
+            layoutTree(); drawAll(); await wait();
+            hlNode = null;
+        } else {
+            // Case 2: key in internal node
+            const leftChild  = node.children[i];
+            const rightChild = node.children[i + 1];
+
+            if (leftChild.keys.length >= T) {
+                // Case 2a: predecessor
+                const pred = await getPredecessor(leftChild);
+                log(`Caso 2a: sostituisco ${k} con predecessore ${pred}`, 'info');
+                node.keys[i] = pred;
+                layoutTree(); drawAll();
+                await btDeleteKey(leftChild, pred);
+            } else if (rightChild.keys.length >= T) {
+                // Case 2b: successor
+                const succ = await getSuccessor(rightChild);
+                log(`Caso 2b: sostituisco ${k} con successore ${succ}`, 'info');
+                node.keys[i] = succ;
+                layoutTree(); drawAll();
+                await btDeleteKey(rightChild, succ);
+            } else {
+                // Case 2c: merge
+                log(`Caso 2c: merge dei figli attorno a ${k}`, 'warn');
+                await mergeChildren(node, i);
+                layoutTree(); drawAll();
+                await btDeleteKey(node.children[i], k);
+            }
+        }
+    } else {
+        // key not in this node
+        if (node.leaf) {
+            log(`Chiave ${k} non trovata`, 'error');
+            showToast(`Chiave ${k} non trovata`, 'error');
+            clearHighlight();
+            return;
+        }
+
+        // Ensure child[i] has at least T keys before descending
+        let childIdx = i;
+        if (node.children[childIdx].keys.length < T) {
+            childIdx = await fixChild(node, childIdx);
+        }
+        layoutTree(); drawAll();
+        await btDeleteKey(node.children[childIdx], k);
+    }
+}
+
+async function getPredecessor(node) {
+    while (!node.leaf) node = node.children[node.children.length - 1];
+    return node.keys[node.keys.length - 1];
+}
+
+async function getSuccessor(node) {
+    while (!node.leaf) node = node.children[0];
+    return node.keys[0];
+}
+
+// Ensure node.children[i] has >= T keys.
+// Returns the (possibly shifted) child index to use after the fix.
+async function fixChild(parent, i) {
+    const child = parent.children[i];
+    const leftSibling  = i > 0 ? parent.children[i - 1] : null;
+    const rightSibling = i < parent.children.length - 1 ? parent.children[i + 1] : null;
+
+    if (leftSibling && leftSibling.keys.length >= T) {
+        // Case 3a: borrow from left sibling
+        log(`Caso 3a: prendo chiave dal fratello sinistro`, 'warn');
+        child.keys.unshift(parent.keys[i - 1]);
+        parent.keys[i - 1] = leftSibling.keys.pop();
+        if (!leftSibling.leaf) child.children.unshift(leftSibling.children.pop());
+        await flashNode(parent, 'yellow');
+        return i;
+    } else if (rightSibling && rightSibling.keys.length >= T) {
+        // Case 3a: borrow from right sibling
+        log(`Caso 3a: prendo chiave dal fratello destro`, 'warn');
+        child.keys.push(parent.keys[i]);
+        parent.keys[i] = rightSibling.keys.shift();
+        if (!rightSibling.leaf) child.children.push(rightSibling.children.shift());
+        await flashNode(parent, 'yellow');
+        return i;
+    } else {
+        // Case 3b: merge
+        if (leftSibling) {
+            log(`Caso 3b: merge con fratello sinistro`, 'warn');
+            await mergeChildren(parent, i - 1);
+            return i - 1;
+        } else {
+            log(`Caso 3b: merge con fratello destro`, 'warn');
+            await mergeChildren(parent, i);
+            return i;
+        }
+    }
+}
+
+// Merge children[i] and children[i+1] using parent.keys[i] as median
+async function mergeChildren(parent, i) {
+    const left  = parent.children[i];
+    const right = parent.children[i + 1];
+    const median = parent.keys.splice(i, 1)[0];
+
+    left.keys.push(median, ...right.keys);
+    if (!left.leaf) left.children.push(...right.children);
+    parent.children.splice(i + 1, 1);
+
+    hlNode = left; hlColor = 'red'; hlKeyIdx = -1;
+    layoutTree(); drawAll(); await wait();
+    hlNode = null;
+}
+
+// ============================================================
+//  INTERACTIVE KEY EDITING
+// ============================================================
+const keyEditorEl  = document.getElementById('keyEditor');
+const keyInputEl   = document.getElementById('keyInput');
+
+let editingNode = null;
+let editingIdx  = -1;
+
+canvas.addEventListener('dblclick', (e) => {
+    const hit = hitTestKey(e);
+    if (!hit) return;
+    editingNode = hit.node;
+    editingIdx  = hit.keyIdx;
+
+    // Position the editor over the cell
+    const rect = canvas.getBoundingClientRect();
+    const cellX = hit.node.x + H_PAD + hit.keyIdx * CELL_W;
+    const cellY = hit.node.y;
+
+    // Transform to screen coordinates
+    const screenX = (cellX * zoom) + canvas.width / 2 + offset.x + rect.left - 4;
+    const screenY = (cellY * zoom) + (offset.y + 30) * 1 + rect.top - 2;
+    // Proper transform accounting for all offsets:
+    const sx = cellX * zoom + (canvas.width / 2 + offset.x) + rect.left;
+    const sy = cellY * zoom + (offset.y + 30) + rect.top;
+
+    keyEditorEl.style.left    = `${sx}px`;
+    keyEditorEl.style.top     = `${sy}px`;
+    keyEditorEl.style.display = 'block';
+    keyInputEl.value          = hit.node.keys[hit.keyIdx];
+    keyInputEl.focus();
+    keyInputEl.select();
+});
+
+keyInputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') commitEdit();
+    if (e.key === 'Escape') cancelEdit();
+});
+
+keyInputEl.addEventListener('blur', () => {
+    // small delay so click on other elements doesn't immediately blur
+    setTimeout(cancelEdit, 150);
+});
+
+function commitEdit() {
+    const newVal = parseInt(keyInputEl.value);
+    if (!isNaN(newVal) && editingNode !== null && editingIdx !== -1) {
+        // Check for duplicates
+        const allKeys = [];
+        collectAllKeys(btRoot, allKeys);
+        const oldVal = editingNode.keys[editingIdx];
+        if (newVal !== oldVal && allKeys.includes(newVal)) {
+            log(`Chiave ${newVal} già presente nell'albero`, 'error');
+            showToast(`Chiave ${newVal} già presente`, 'error');
+            cancelEdit();
+            return;
+        }
+        editingNode.keys[editingIdx] = newVal;
+        // Re-sort keys in the node (keep valid BST order within node)
+        editingNode.keys.sort((a, b) => a - b);
+        log(`Chiave modificata: ${oldVal} → ${newVal}`, 'success');
+        showToast(`Chiave aggiornata: ${oldVal} → ${newVal}`, 'success');
+        layoutTree(); drawAll();
+    }
+    cancelEdit();
+}
+
+function cancelEdit() {
+    keyEditorEl.style.display = 'none';
+    editingNode = null;
+    editingIdx  = -1;
+}
+
+function collectAllKeys(node, arr) {
+    if (!node) return;
+    arr.push(...node.keys);
+    if (!node.leaf) for (const ch of node.children) collectAllKeys(ch, arr);
+}
+
+// Hit-test: find if click is on a key cell
+function hitTestKey(e) {
+    const rect = canvas.getBoundingClientRect();
+    // inverse transform
+    const mx = (e.clientX - rect.left - canvas.width / 2 - offset.x) / zoom;
+    const my = (e.clientY - rect.top  - (offset.y + 30))              / zoom;
+    return findKeyAt(btRoot, mx, my);
+}
+
+function findKeyAt(node, mx, my) {
+    if (!node) return null;
+    if (my >= node.y && my <= node.y + CELL_H) {
+        for (let i = 0; i < node.keys.length; i++) {
+            const kx = node.x + H_PAD + i * CELL_W;
+            if (mx >= kx && mx <= kx + CELL_W) {
+                return { node, keyIdx: i };
+            }
+        }
+    }
+    if (!node.leaf) {
+        for (const ch of node.children) {
+            const r = findKeyAt(ch, mx, my);
+            if (r) return r;
+        }
+    }
+    return null;
+}
+
+// ============================================================
+//  PAN & ZOOM
+// ============================================================
+cont.addEventListener('mousedown', (e) => {
+    isDragging = true; lastMouse = { x: e.clientX, y: e.clientY };
+});
+window.addEventListener('mouseup', () => { isDragging = false; });
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    offset.x += e.clientX - lastMouse.x;
+    offset.y += e.clientY - lastMouse.y;
+    lastMouse = { x: e.clientX, y: e.clientY };
+    drawAll();
+});
+cont.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const dir = e.deltaY > 0 ? -1 : 1;
+    const nz = zoom + dir * 0.1;
+    if (nz >= 0.2 && nz <= 4) { zoom = nz; drawAll(); }
+}, { passive: false });
+window.addEventListener('resize', drawAll);
+
+// ============================================================
+//  CONTROL PANEL EVENT LISTENERS
+// ============================================================
+document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const theme = btn.dataset.theme;
+        if (theme === 'default') document.body.removeAttribute('data-theme');
+        else document.body.setAttribute('data-theme', theme);
+        drawAll();
+    });
+});
+
+document.getElementById('tSelect').addEventListener('change', (e) => {
+    T = parseInt(e.target.value);
+    updateStats();
+    log(`Grado minimo t impostato a ${T}`, 'info');
+    showToast(`t = ${T}`, 'info');
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+    btRoot = null;
+    hlNode = null; hlKeyIdx = -1;
+    offset = { x: 0, y: 0 }; zoom = 1;
+    startOp('Albero resettato');
+    drawAll(); updateStats();
+    showToast('Albero resettato', 'info');
+});
+
+document.getElementById('insertBtn').addEventListener('click', async () => {
+    const val = parseInt(document.getElementById('keyVal').value);
+    if (isNaN(val)) {
+        startOp('Inserimento'); log('Valore non valido', 'error');
+        showToast('Inserisci un numero intero', 'error'); return;
+    }
+    startOp(`Inserimento chiave ${val}`);
+    await btInsert(val, true);
+    clearHighlight();
+    updateStats();
+    document.getElementById('keyVal').value = '';
+    showToast(`Chiave ${val} inserita`, 'success');
+});
+
+document.getElementById('searchBtn').addEventListener('click', async () => {
+    const val = parseInt(document.getElementById('keyVal').value);
+    if (isNaN(val)) {
+        startOp('Ricerca'); log('Valore non valido', 'error');
+        showToast('Inserisci un numero intero', 'error'); return;
+    }
+    startOp(`Ricerca chiave ${val}`);
+    const res = await btSearch(btRoot, val, true);
+    clearHighlight();
+    if (!res) showToast(`Chiave ${val} non trovata`, 'error');
+    else showToast(`Chiave ${val} trovata!`, 'success');
+});
+
+document.getElementById('deleteBtn').addEventListener('click', async () => {
+    const val = parseInt(document.getElementById('keyVal').value);
+    if (isNaN(val)) {
+        startOp('Eliminazione'); log('Valore non valido', 'error');
+        showToast('Inserisci un numero intero', 'error'); return;
+    }
+    startOp(`Eliminazione chiave ${val}`);
+    await btDelete(val);
+    clearHighlight();
+    showToast(`Chiave ${val} eliminata`, 'success');
+    document.getElementById('keyVal').value = '';
+});
+
+document.getElementById('keyVal').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('insertBtn').click();
+});
+
+document.getElementById('bulkBtn').addEventListener('click', async () => {
+    const input = document.getElementById('bulkVal').value;
+    const arr = input.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+    if (arr.length === 0) {
+        startOp('Inserimento multiplo'); log('Nessun valore valido', 'error');
+        showToast('Inserisci valori separati da virgola', 'error'); return;
+    }
+    startOp(`Inserimento multiplo (${arr.length} chiavi)`);
+    const oldSpeed = animSpeed; animSpeed = 40;
+    for (const v of arr) {
+        log(`Inserisco ${v}`, 'info');
+        await btInsert(v, false);
+    }
+    animSpeed = oldSpeed;
+    layoutTree(); drawAll(); updateStats();
+    document.getElementById('bulkVal').value = '';
+    clearHighlight();
+    showToast(`${arr.length} chiavi inserite`, 'success');
+});
+
+document.getElementById('randomBtn').addEventListener('click', async () => {
+    btRoot = null; hlNode = null; hlKeyIdx = -1;
+    const n = 12 + Math.floor(Math.random() * 8);
+    const vals = new Set();
+    while (vals.size < n) vals.add(Math.floor(Math.random() * 99) + 1);
+    const arr = [...vals];
+    startOp(`Generazione casuale (${arr.length} chiavi)`);
+    const oldSpeed = animSpeed; animSpeed = 30;
+    for (const v of arr) await btInsert(v, false);
+    animSpeed = oldSpeed;
+    layoutTree(); drawAll(); updateStats();
+    clearHighlight();
+    showToast(`${arr.length} chiavi casuali inserite`, 'success');
+});
+
+document.getElementById('speedSlider').addEventListener('input', (e) => {
+    animSpeed = Math.round(1000 - parseInt(e.target.value) * 9);
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+startOp('Pronto. Doppio-click su una chiave per modificarla.');
+drawAll();
+updateStats();
+</script>
+</body>
+</html>
