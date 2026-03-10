@@ -949,9 +949,25 @@ function commitEdit() {
             cancelEdit();
             return;
         }
+
+        // Keep B-Tree ordering constraints valid after manual edit.
+        const bounds = getKeyEditBounds(btRoot, editingNode, editingIdx);
+        if (!bounds) {
+            log('Impossibile validare il nodo selezionato', 'error');
+            showToast('Errore interno di validazione', 'error');
+            cancelEdit();
+            return;
+        }
+        if (newVal <= bounds.low || newVal >= bounds.high) {
+            const lowTxt = formatBound(bounds.low, '-inf');
+            const highTxt = formatBound(bounds.high, '+inf');
+            log(`Valore fuori intervallo: deve essere tra ${lowTxt} e ${highTxt}`, 'error');
+            showToast(`Valore non valido: (${lowTxt}, ${highTxt})`, 'error');
+            cancelEdit();
+            return;
+        }
+
         editingNode.keys[editingIdx] = newVal;
-        // Re-sort keys in the node (keep valid BST order within node)
-        editingNode.keys.sort((a, b) => a - b);
         log(`Chiave modificata: ${oldVal} → ${newVal}`, 'success');
         showToast(`Chiave aggiornata: ${oldVal} → ${newVal}`, 'success');
         layoutTree(); drawAll();
@@ -969,6 +985,70 @@ function collectAllKeys(node, arr) {
     if (!node) return;
     arr.push(...node.keys);
     if (!node.leaf) for (const ch of node.children) collectAllKeys(ch, arr);
+}
+
+function getSubtreeMin(node) {
+    let cur = node;
+    while (cur && !cur.leaf) cur = cur.children[0];
+    return cur.keys[0];
+}
+
+function getSubtreeMax(node) {
+    let cur = node;
+    while (cur && !cur.leaf) cur = cur.children[cur.children.length - 1];
+    return cur.keys[cur.keys.length - 1];
+}
+
+function findPathToNode(curr, target, path = []) {
+    if (!curr) return null;
+    path.push(curr);
+    if (curr === target) return [...path];
+
+    if (!curr.leaf) {
+        for (const ch of curr.children) {
+            const found = findPathToNode(ch, target, path);
+            if (found) return found;
+        }
+    }
+
+    path.pop();
+    return null;
+}
+
+function getKeyEditBounds(root, node, keyIdx) {
+    const path = findPathToNode(root, node);
+    if (!path) return null;
+
+    let low = -Infinity;
+    let high = Infinity;
+
+    // Bounds inherited from ancestors.
+    for (let d = 1; d < path.length; d++) {
+        const parent = path[d - 1];
+        const child = path[d];
+        const childIdx = parent.children.indexOf(child);
+        if (childIdx === -1) return null;
+
+        if (childIdx > 0) low = Math.max(low, parent.keys[childIdx - 1]);
+        if (childIdx < parent.keys.length) high = Math.min(high, parent.keys[childIdx]);
+    }
+
+    // Bounds from adjacent keys in the same node.
+    if (keyIdx > 0) low = Math.max(low, node.keys[keyIdx - 1]);
+    if (keyIdx < node.keys.length - 1) high = Math.min(high, node.keys[keyIdx + 1]);
+
+    // For internal nodes, key must also separate its two adjacent subtrees.
+    if (!node.leaf) {
+        low = Math.max(low, getSubtreeMax(node.children[keyIdx]));
+        high = Math.min(high, getSubtreeMin(node.children[keyIdx + 1]));
+    }
+
+    return { low, high };
+}
+
+function formatBound(v, infinityLabel) {
+    if (!Number.isFinite(v)) return infinityLabel;
+    return String(v);
 }
 
 // Hit-test: find if click is on a key cell
